@@ -29,10 +29,10 @@
 <h2>👨‍🎓 Alunos</h2>
 <p>Preencha os dados dos alunos participantes do projeto abaixo:</p>
 <ul>
-    <li><b>Nome:</b> [Nome do Aluno 1]
+    <li><b>Nome:</b> Patrik Luiz
     <ul>
-        <li><b>R.A.:</b> [R.A. do Aluno 1]</li>
-        <li><b>GitHub:</b> <a href="[Link do GitHub do Aluno 1]">[Link do GitHub do Aluno 1]</a></li>
+        <li><b>R.A.:</b> 03.23.117720-0</li>
+        <li><b>GitHub:</b> <a href="https://github.com/zPlcs">https://github.com/zPlcs</a></li>
     </ul>
     </li>
     <li><b>Nome:</b> [Nome do Aluno 2]

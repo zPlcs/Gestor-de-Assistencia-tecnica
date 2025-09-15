@@ -35,10 +35,10 @@
         <li><b>GitHub:</b> <a href="https://github.com/zPlcs">https://github.com/zPlcs</a></li>
     </ul>
     </li>
-    <li><b>Nome:</b> [Nome do Aluno 2]
+     <li><b>Nome:</b> João Vitor Coreli
     <ul>
-        <li><b>R.A.:</b> [R.A. do Aluno 2]</li>
-        <li><b>GitHub:</b> <a href="[Link do GitHub do Aluno 2]">[Link do GitHub do Aluno 2]</a></li>
+        <li><b>R.A.:</b> 03231209625</li>
+        <li><b>GitHub:</b> <a href="https://github.com/Coreli21">https://github.com/Coreli21</a></li>
     </ul>
     </li>
 </ul>

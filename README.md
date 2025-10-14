@@ -20,7 +20,7 @@
 <ul>
     <li><b>Frontend:</b> Desenvolvido com <b>React</b>, garantindo uma interface de usuário dinâmica, responsiva e de alta performance.</li>
     <li><b>Backend:</b> A API foi criada com <b>Node.js</b>, utilizando o framework <b>Express</b> para uma comunicação eficiente e segura entre o frontend e o banco de dados.</li>
-    <li><b>Banco de Dados:</b> Para este tipo de aplicação, o <b>MySQL</b> é a escolha ideal. Por ser um sistema de gerenciamento de banco de dados relacional robusto e amplamente utilizado, ele é perfeito para lidar com a estrutura de dados necessária para ordens de serviço, clientes e funcionários.</li>
+    <li><b>Banco de Dados:</b> Para este tipo de aplicação, o <b>MongoDB</b> é a escolha ideal. Por ser um sistema de gerenciamento de banco de dados relacional e amplamente utilizado, ele é perfeito para lidar com a estrutura de dados necessária para ordens de serviço, clientes e funcionários.</li>
     <li><b>Datalake:</b> A arquitetura do sistema contempla a utilização de um <b>Datalake</b> para a coleta e o armazenamento de grandes volumes de dados não estruturados e semi-estruturados, como logs de sistema, interações de usuários e dados de telemetria de equipamentos. Essa camada permite realizar análises avançadas e aplicar modelos de <b>machine learning</b> no futuro, para, por exemplo, prever a demanda por serviços ou identificar padrões de falhas comuns em equipamentos.</li>
 </ul>
 

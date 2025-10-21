@@ -1,40 +1,42 @@
 // gestor-backend/server.js
 
-// Carrega as variáveis de ambiente do arquivo .env
 require('dotenv').config(); 
-
 const express = require('express');
-const cors = require('cors'); // Importa o CORS
+const cors = require('cors'); 
+const mongoose = require('mongoose'); // <-- NOVO: Importa o Mongoose
 
-// Inicialização
+// Importa a rota de Clientes (que está quebrada agora, mas corrigiremos!)
+const clientesRoutes = require('./src/routes/clientesRoutes'); 
+
+// 1. INICIALIZAÇÃO DO EXPRESS
 const app = express();
-const PORT = process.env.PORT || 3001; // Usa a porta do .env ou 3001
+const PORT = process.env.PORT || 3001;
 
-// -------------------------------------------------------------------
-// Middlewares Essenciais
-// -------------------------------------------------------------------
-
-// 1. CORS: Permite requisições do Frontend (porta 3000)
-app.use(cors()); 
-
-// 2. Body Parser: Permite que o Express leia JSON no corpo das requisições
+// 2. Middlewares
 app.use(express.json());
+app.use(cors());
 
-// -------------------------------------------------------------------
-// Rota de Teste (Sanidade)
-// -------------------------------------------------------------------
 
+// =======================================================
+// CONEXÃO SIMPLIFICADA E GLOBAL DO MONGOOSE
+// =======================================================
+
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log('✅ Conectado ao MongoDB (Mongoose)!'))
+  .catch(err => console.error('❌ Erro FATAL ao conectar ao MongoDB:', err));
+
+
+// 3. INTEGRAÇÃO DAS ROTAS (Aqui o Express já está definido)
+app.use('/api/clientes', clientesRoutes); 
+
+
+// Rota de Teste
 app.get('/', (req, res) => {
-    res.status(200).json({ 
-        message: 'Servidor Express está online! ✅',
-        environment: process.env.NODE_ENV || 'development'
-    });
+    res.status(200).json({ message: 'Servidor Express está online! ✅' });
 });
 
-// -------------------------------------------------------------------
-// Inicialização do Servidor
-// -------------------------------------------------------------------
 
+// 4. Iniciar o Servidor
 app.listen(PORT, () => {
-    console.log(`🚀 Servidor rodando em http://localhost:${PORT}`);
+  console.log(`🚀 Servidor Express rodando em http://localhost:${PORT}`);
 });

@@ -7,12 +7,12 @@ import Layout from './components/Layout';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import CriarOS from './pages/CriarOS'
+import OrdensServico from './pages/OrdensServico';
+import Clientes from './pages/Clientes';
+import Equipamentos from './pages/Equipamentos';
+import Funcionarios from './pages/Funcionario';
 
-// Placeholder para as páginas futuras
-const Clientes = () => <h1>Gerenciar Clientes</h1>;
-const Funcionarios = () => <h1>Gerenciar Funcionários</h1>;
-const OrdensServico = () => <h1>Gerenciar Ordens de Serviço</h1>;
-
+// Placeholder para as páginas futurasw
 
 function App() {
   return (
@@ -32,6 +32,7 @@ function App() {
                 {/* As rotas internas definidas no Sidebar */}
                 <Route path="/" element={<Dashboard />} /> 
                 <Route path="/clientes" element={<Clientes />} />
+                <Route path="/equipamentos" element={<Equipamentos />} />
                 <Route path="/funcionarios" element={<Funcionarios />} />
                 <Route path="/os" element={<OrdensServico />} />
                 {/* Rota de criação pode ser a mesma do gerenciar, mas com um parâmetro, por exemplo */}

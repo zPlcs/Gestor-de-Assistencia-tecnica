@@ -6,6 +6,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
+import CriarOS from './pages/CriarOS'
 
 // Placeholder para as páginas futuras
 const Clientes = () => <h1>Gerenciar Clientes</h1>;
@@ -34,7 +35,7 @@ function App() {
                 <Route path="/funcionarios" element={<Funcionarios />} />
                 <Route path="/os" element={<OrdensServico />} />
                 {/* Rota de criação pode ser a mesma do gerenciar, mas com um parâmetro, por exemplo */}
-                <Route path="/os/novo" element={<h1>Criar Nova OS / Serviço</h1>} /> 
+                <Route path="/os/novo" element={<CriarOS />} /> {/* <-- NOVA ROTA */}
               </Routes>
             </Layout>
           } 

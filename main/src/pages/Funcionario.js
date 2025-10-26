@@ -1,42 +1,123 @@
-// src/pages/Funcionarios.js
+import React, { useState, useEffect } from 'react';
+import { Container, Row, Col, Card, Table, Button, Modal, Form, Badge, Alert, Spinner } from 'react-bootstrap';
+import api from '../services/api'; // Módulo Axios para comunicação com o Backend
 
-import React, { useState } from 'react';
-import { Container, Row, Col, Card, Table, Button, Modal, Form, Badge } from 'react-bootstrap';
-
-// Dados de Exemplo para simular a resposta da API
-const mockFuncionarios = [
-  { id: 101, nome: 'João Alves', email: 'joao.alves@assist.com', cargo: 'Técnico Sênior', osAtribuidas: 15, status: 'Ativo' },
-  { id: 102, nome: 'Maria Santos', email: 'maria.santos@assist.com', cargo: 'Técnica Júnior', osAtribuidas: 10, status: 'Ativo' },
-  { id: 103, nome: 'Ana Costa', email: 'ana.costa@assist.com', cargo: 'Administrador', osAtribuidas: 0, status: 'Ativo' },
-  { id: 104, nome: 'Pedro Lima', email: 'pedro.lima@assist.com', cargo: 'Técnico Júnior', osAtribuidas: 0, status: 'Inativo' },
-];
-
-// Função auxiliar para mudar a cor do Status do Funcionário
 const getStatusVariant = (status) => {
   return status === 'Ativo' ? 'success' : 'danger';
 };
 
 const Funcionarios = () => {
+  const [funcionarios, setFuncionarios] = useState([]); 
   const [showModal, setShowModal] = useState(false);
   const [formFuncionario, setFormFuncionario] = useState({});
+  
+  // Estados de UI
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState(null);
 
+  // ----------------------------------------------------------------------
+  // FUNÇÕES DE COMUNICAÇÃO COM A API (CREATE, READ, UPDATE, DELETE)
+  // ----------------------------------------------------------------------
+
+  // A) FUNÇÃO DE BUSCAR (READ)
+  const fetchFuncionarios = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await api.get('/funcionarios');
+      setFuncionarios(response.data); 
+    } catch (err) {
+      setError('Falha ao carregar funcionários. Verifique o Backend.');
+      console.error('Erro ao buscar funcionários:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchFuncionarios();
+  }, []); // Carrega funcionários na montagem
+
+  // B) FUNÇÃO DE CRIAÇÃO/EDIÇÃO (CREATE/UPDATE)
+  const handleSave = async () => {
+    setSubmitting(true);
+    setError(null);
+    try {
+      if (formFuncionario._id) { 
+        // EDIÇÃO (PUT)
+        // Nota: Não enviamos a senha em branco na edição para não sobrescrever a criptografada
+        const dataToUpdate = { ...formFuncionario };
+        delete dataToUpdate.senha; 
+
+        await api.put(`/funcionarios/${formFuncionario._id}`, dataToUpdate);
+        
+      } else {
+        // CRIAÇÃO (POST)
+        // A senha deve ser obrigatória aqui (validação Mongoose no Backend)
+        if (!formFuncionario.senha) {
+            setError('A senha inicial é obrigatória para novos funcionários.');
+            setSubmitting(false);
+            return;
+        }
+        await api.post('/funcionarios', formFuncionario);
+      }
+      
+      handleClose();
+      fetchFuncionarios(); // Recarrega a lista
+      
+    } catch (err) {
+      setError(`Erro ao salvar funcionário: ${err.response?.data?.message || 'Erro de rede/servidor'}`);
+      console.error('Erro ao salvar funcionário:', err);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+  
+  // C) FUNÇÃO DE DELETAR (DELETE)
+  const handleDelete = async (id, nome) => {
+    if (window.confirm(`Tem certeza que deseja DELETAR o funcionário: ${nome}?`)) {
+        setError(null);
+        try {
+            await api.delete(`/funcionarios/${id}`);
+            fetchFuncionarios(); // Recarrega a lista após a exclusão
+        } catch (err) {
+            setError(`Erro ao deletar funcionário: ${err.response?.data?.message || 'Erro de rede/servidor'}`);
+            console.error('Erro ao deletar funcionário:', err);
+        }
+    }
+  };
+
+
+  // ----------------------------------------------------------------------
+  // FUNÇÕES DE UI (Modal, Forms)
+  // ----------------------------------------------------------------------
+  
   const handleShow = (func = {}) => {
-    setFormFuncionario(func); 
+    // Usamos '_id' do MongoDB
+    setFormFuncionario(func._id ? func : {}); 
     setShowModal(true);
   };
-  const handleClose = () => setShowModal(false);
+  
+  const handleClose = () => {
+    setShowModal(false);
+    setFormFuncionario({}); // Limpa o formulário ao fechar
+    setError(null); 
+  };
 
   const handleChange = (e) => {
     setFormFuncionario({ ...formFuncionario, [e.target.name]: e.target.value });
   };
-
+  
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Dados do Funcionário Enviados (Simulado):', formFuncionario);
-    alert(`Funcionário ${formFuncionario.id ? 'editado' : 'cadastrado'} com sucesso! (Simulado)`);
-    handleClose();
-    // AQUI ENTRARIA A CHAMADA AXIOS (POST ou PUT) PARA O BACKEND
+    handleSave();
   };
+
+
+  // ----------------------------------------------------------------------
+  // RENDERIZAÇÃO
+  // ----------------------------------------------------------------------
 
   return (
     <Container fluid className="p-4">
@@ -52,47 +133,58 @@ const Funcionarios = () => {
         </Col>
       </Row>
 
+      {/* Exibe erros da API ou da aplicação */}
+      {error && <Alert variant="danger" className="mb-3">{error}</Alert>}
+
       <Card className="shadow-sm">
         <Card.Body>
-          <Table striped bordered hover responsive>
-            <thead>
-              <tr>
-                <th># ID</th>
-                <th>Nome</th>
-                <th>Cargo</th>
-                <th>E-mail</th>
-                <th>OS Atribuídas</th>
-                <th>Status</th>
-                <th>Ações</th>
-              </tr>
-            </thead>
-            <tbody>
-              {mockFuncionarios.map((func) => (
-                <tr key={func.id}>
-                  <td>{func.id}</td>
-                  <td>{func.nome}</td>
-                  <td>{func.cargo}</td>
-                  <td>{func.email}</td>
-                  <td>{func.osAtribuidas}</td>
-                  <td>
-                    <Badge bg={getStatusVariant(func.status)} pill>
-                      {func.status}
-                    </Badge>
-                  </td>
-                  <td>
-                    {/* Botão de Edição */}
-                    <Button variant="outline-secondary" size="sm" className="me-2" onClick={() => handleShow(func)}>
-                      <i className="fas fa-edit"></i>
-                    </Button>
-                    {/* Botão de Deleção (Simulado) */}
-                    <Button variant="outline-danger" size="sm">
-                      <i className="fas fa-trash-alt"></i>
-                    </Button>
-                  </td>
+          {loading ? (
+            <div className="text-center p-5">
+              <Spinner animation="border" role="status" />
+              <p className="mt-2">Carregando funcionários...</p>
+            </div>
+          ) : (
+            <Table striped bordered hover responsive>
+              <thead>
+                <tr>
+                  <th># ID</th>
+                  <th>Nome</th>
+                  <th>Cargo</th>
+                  <th>E-mail</th>
+                  <th>Status</th>
+                  <th>Ações</th>
                 </tr>
-              ))}
-            </tbody>
-          </Table>
+              </thead>
+              <tbody>
+                {funcionarios.map((func) => (
+                  <tr key={func._id}>
+                    <td>{func._id ? func._id.substring(0, 6) : 'N/A'}...</td>
+                    <td>{func.nome}</td>
+                    <td>{func.cargo}</td>
+                    <td>{func.email}</td>
+                    <td>
+                      <Badge bg={getStatusVariant(func.status)} pill>
+                        {func.status}
+                      </Badge>
+                    </td>
+                    <td>
+                      {/* Botão de Edição */}
+                      <Button variant="outline-secondary" size="sm" className="me-2" onClick={() => handleShow(func)} disabled={submitting}>
+                        <i className="fas fa-edit"></i>
+                      </Button>
+                      {/* Botão de Deleção */}
+                      <Button variant="outline-danger" size="sm" onClick={() => handleDelete(func._id, func.nome)} disabled={submitting}>
+                        <i className="fas fa-trash-alt"></i>
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          )}
+           {!loading && funcionarios.length === 0 && (
+                <Alert variant="info" className="text-center mt-3">Nenhum funcionário cadastrado ainda.</Alert>
+            )}
         </Card.Body>
       </Card>
 
@@ -101,7 +193,7 @@ const Funcionarios = () => {
       {/* ---------------------------------------------------- */}
       <Modal show={showModal} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>{formFuncionario.id ? `Editar Funcionário: ${formFuncionario.nome}` : 'Cadastrar Novo Funcionário'}</Modal.Title>
+          <Modal.Title>{formFuncionario._id ? `Editar Funcionário: ${formFuncionario.nome}` : 'Cadastrar Novo Funcionário'}</Modal.Title>
         </Modal.Header>
         <Form onSubmit={handleSubmit}>
           <Modal.Body>
@@ -113,6 +205,7 @@ const Funcionarios = () => {
                 value={formFuncionario.nome || ''} 
                 onChange={handleChange} 
                 required 
+                disabled={submitting}
               />
             </Form.Group>
             
@@ -124,6 +217,7 @@ const Funcionarios = () => {
                 value={formFuncionario.email || ''} 
                 onChange={handleChange} 
                 required 
+                disabled={submitting || formFuncionario._id} // Não edita o email no PUT
               />
             </Form.Group>
             
@@ -136,6 +230,7 @@ const Funcionarios = () => {
                         value={formFuncionario.cargo || ''} 
                         onChange={handleChange} 
                         required
+                        disabled={submitting}
                     >
                         <option value="">Selecione...</option>
                         <option value="Administrador">Administrador</option>
@@ -152,6 +247,7 @@ const Funcionarios = () => {
                         name="status" 
                         value={formFuncionario.status || 'Ativo'} 
                         onChange={handleChange} 
+                        disabled={submitting}
                     >
                         <option value="Ativo">Ativo</option>
                         <option value="Inativo">Inativo</option>
@@ -161,26 +257,27 @@ const Funcionarios = () => {
             </Row>
 
             {/* Campo de Senha - Apenas para cadastro ou redefinição */}
-            {!formFuncionario.id && (
+            {!formFuncionario._id && (
                 <Form.Group className="mb-3">
                     <Form.Label>Senha Inicial *</Form.Label>
                     <Form.Control 
                         type="password" 
                         name="senha"
                         onChange={handleChange} 
-                        required={!formFuncionario.id}
-                        placeholder="Mínimo 8 caracteres"
+                        required={!formFuncionario._id} // Requerida apenas na criação
+                        placeholder="Mínimo 6 caracteres"
+                        disabled={submitting}
                     />
                 </Form.Group>
             )}
 
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="secondary" onClick={handleClose}>
+            <Button variant="secondary" onClick={handleClose} disabled={submitting}>
               Cancelar
             </Button>
-            <Button variant="primary" type="submit">
-              {formFuncionario.id ? 'Salvar Alterações' : 'Cadastrar Funcionário'}
+            <Button variant="primary" type="submit" disabled={submitting}>
+              {submitting ? <Spinner size="sm" animation="border" /> : (formFuncionario._id ? 'Salvar Alterações' : 'Cadastrar Funcionário')}
             </Button>
           </Modal.Footer>
         </Form>

@@ -7,6 +7,8 @@ const mongoose = require('mongoose'); // <-- NOVO: Importa o Mongoose
 
 // Importa a rota de Clientes (que está quebrada agora, mas corrigiremos!)
 const clientesRoutes = require('./src/routes/clientesRoutes'); 
+const funcionariosRoutes = require('./src/routes/funcionarioRoutes');
+const equipamentoRoutes = require('./src/routes/equipamentoRoutes');
 
 // 1. INICIALIZAÇÃO DO EXPRESS
 const app = express();
@@ -28,7 +30,8 @@ mongoose.connect(process.env.MONGO_URI)
 
 // 3. INTEGRAÇÃO DAS ROTAS (Aqui o Express já está definido)
 app.use('/api/clientes', clientesRoutes); 
-
+app.use('/api/funcionarios', funcionariosRoutes);
+app.use('/api/equipamentos', equipamentoRoutes);
 
 // Rota de Teste
 app.get('/', (req, res) => {

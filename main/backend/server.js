@@ -9,6 +9,7 @@ const mongoose = require('mongoose'); // <-- NOVO: Importa o Mongoose
 const clientesRoutes = require('./src/routes/clientesRoutes'); 
 const funcionariosRoutes = require('./src/routes/funcionarioRoutes');
 const equipamentoRoutes = require('./src/routes/equipamentoRoutes');
+const osRoutes = require('./src/routes/osRoutes');
 
 // 1. INICIALIZAÇÃO DO EXPRESS
 const app = express();
@@ -32,6 +33,7 @@ mongoose.connect(process.env.MONGO_URI)
 app.use('/api/clientes', clientesRoutes); 
 app.use('/api/funcionarios', funcionariosRoutes);
 app.use('/api/equipamentos', equipamentoRoutes);
+app.use('/api/os', osRoutes);
 
 // Rota de Teste
 app.get('/', (req, res) => {

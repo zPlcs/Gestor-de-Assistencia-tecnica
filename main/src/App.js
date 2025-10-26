@@ -6,7 +6,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
-import CriarOS from './pages/CriarOS'
+import FormularioOS from './pages/FormularioOS'
 import OrdensServico from './pages/OrdensServico';
 import Clientes from './pages/Clientes';
 import Equipamentos from './pages/Equipamentos';
@@ -36,7 +36,8 @@ function App() {
                 <Route path="/funcionarios" element={<Funcionarios />} />
                 <Route path="/os" element={<OrdensServico />} />
                 {/* Rota de criação pode ser a mesma do gerenciar, mas com um parâmetro, por exemplo */}
-                <Route path="/os/novo" element={<CriarOS />} /> {/* <-- NOVA ROTA */}
+                <Route path="/os/novo" element={<FormularioOS />} /> {/* <-- NOVA ROTA */}
+                <Route path="/os/:id" element={<FormularioOS />} />
               </Routes>
             </Layout>
           } 

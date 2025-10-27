@@ -4,14 +4,14 @@ import api from '../services/api'; // Módulo Axios para comunicação com o Bac
 
 const Clientes = () => {
   // Estado para armazenar os clientes REALMENTE carregados da API
-  const [clientes, setClientes] = useState([]); 
-  
+  const [clientes, setClientes] = useState([]);
+
   // Estado para gerenciar a visibilidade do Modal
   const [showModal, setShowModal] = useState(false);
-  
+
   // Estado para gerenciar os dados do formulário (para criar/editar)
   const [formCliente, setFormCliente] = useState({});
-  
+
   // Estados de UI para feedback ao usuário
   const [loading, setLoading] = useState(true); // Carregamento da lista
   const [submitting, setSubmitting] = useState(false); // Submissão do formulário
@@ -28,7 +28,7 @@ const Clientes = () => {
     try {
       const response = await api.get('/clientes');
       // O backend nativo do MongoDB usa '_id'
-      setClientes(response.data); 
+      setClientes(response.data);
     } catch (err) {
       setError('Falha ao carregar clientes. Verifique a conexão com o Backend.');
       console.error('Erro ao buscar clientes:', err);
@@ -40,7 +40,7 @@ const Clientes = () => {
   // Carrega clientes na montagem do componente
   useEffect(() => {
     fetchClientes();
-  }, []); 
+  }, []);
 
   // B) FUNÇÃO DE CRIAÇÃO/EDIÇÃO (CREATE/UPDATE)
   const handleSave = async () => {
@@ -50,15 +50,15 @@ const Clientes = () => {
       if (formCliente._id) { // Verifica se o objeto tem _id (MongoDB) para saber se é EDIÇÃO
         // EDIÇÃO (PUT)
         await api.put(`/clientes/${formCliente._id}`, formCliente);
-        
+
       } else {
         // CRIAÇÃO (POST)
         await api.post('/clientes', formCliente);
       }
-      
+
       handleClose();
       fetchClientes(); // Recarrega a lista para mostrar a alteração
-      
+
     } catch (err) {
       setError(`Erro ao salvar cliente: ${err.response?.data?.message || 'Erro de rede/servidor'}`);
       console.error('Erro ao salvar cliente:', err);
@@ -66,19 +66,19 @@ const Clientes = () => {
       setSubmitting(false);
     }
   };
-  
+
   // C) FUNÇÃO DE DELETAR (DELETE)
   const handleDelete = async (id, nome) => {
     // Uso de Modal customizado seria preferível, mas por simplicidade usamos o confirm
     if (window.confirm(`Tem certeza que deseja deletar o cliente: ${nome}? Esta ação é irreversível.`)) {
-        setError(null);
-        try {
-            await api.delete(`/clientes/${id}`);
-            fetchClientes(); // Recarrega a lista após a exclusão
-        } catch (err) {
-            setError(`Erro ao deletar cliente: ${err.response?.data?.message || 'Erro de rede/servidor'}`);
-            console.error('Erro ao deletar cliente:', err);
-        }
+      setError(null);
+      try {
+        await api.delete(`/clientes/${id}`);
+        fetchClientes(); // Recarrega a lista após a exclusão
+      } catch (err) {
+        setError(`Erro ao deletar cliente: ${err.response?.data?.message || 'Erro de rede/servidor'}`);
+        console.error('Erro ao deletar cliente:', err);
+      }
     }
   };
 
@@ -86,13 +86,13 @@ const Clientes = () => {
   // ----------------------------------------------------------------------
   // FUNÇÕES DE UI (Modal, Forms, Handlers)
   // ----------------------------------------------------------------------
-  
+
   const handleShow = (cliente = {}) => {
     // Usa '_id' (do MongoDB) para identificar, se estiver editando
-    setFormCliente(cliente._id ? cliente : {}); 
+    setFormCliente(cliente._id ? cliente : {});
     setShowModal(true);
   };
-  
+
   const handleClose = () => {
     setShowModal(false);
     setFormCliente({}); // Limpa o formulário ao fechar
@@ -102,7 +102,7 @@ const Clientes = () => {
   const handleChange = (e) => {
     setFormCliente({ ...formCliente, [e.target.name]: e.target.value });
   };
-  
+
   const handleSubmit = (e) => {
     e.preventDefault();
     handleSave();
@@ -120,7 +120,7 @@ const Clientes = () => {
         </Col>
         <Col className="text-end">
           <Button variant="primary" onClick={() => handleShow({})}>
-            <i className="fas fa-plus-circle me-2"></i> Novo Cliente
+            Adicionar Cliente
           </Button>
         </Col>
       </Row>
@@ -151,7 +151,7 @@ const Clientes = () => {
                 {clientes.map((cliente) => (
                   <tr key={cliente._id}>
                     {/* Exibe os 6 primeiros caracteres do _id do MongoDB */}
-                    <td>{cliente._id ? cliente._id.substring(0, 6) : 'N/A'}...</td> 
+                    <td>{cliente._id ? cliente._id.substring(0, 6) : 'N/A'}...</td>
                     <td>{cliente.nome}</td>
                     <td>{cliente.email}</td>
                     <td>{cliente.telefone}</td>
@@ -171,9 +171,9 @@ const Clientes = () => {
               </tbody>
             </Table>
           )}
-           {!loading && clientes.length === 0 && (
-                <Alert variant="info" className="text-center mt-3">Nenhum cliente cadastrado ainda. Clique em "Novo Cliente" para começar.</Alert>
-            )}
+          {!loading && clientes.length === 0 && (
+            <Alert variant="info" className="text-center mt-3">Nenhum cliente cadastrado ainda. Clique em "Novo Cliente" para começar.</Alert>
+          )}
         </Card.Body>
       </Card>
 
@@ -188,47 +188,47 @@ const Clientes = () => {
           <Modal.Body>
             <Form.Group className="mb-3" controlId="formNome">
               <Form.Label>Nome/Razão Social *</Form.Label>
-              <Form.Control 
-                type="text" 
+              <Form.Control
+                type="text"
                 name="nome"
-                value={formCliente.nome || ''} 
-                onChange={handleChange} 
-                required 
+                value={formCliente.nome || ''}
+                onChange={handleChange}
+                required
                 disabled={submitting}
               />
             </Form.Group>
-            
+
             <Form.Group className="mb-3" controlId="formEmail">
               <Form.Label>E-mail *</Form.Label>
-              <Form.Control 
-                type="email" 
+              <Form.Control
+                type="email"
                 name="email"
-                value={formCliente.email || ''} 
-                onChange={handleChange} 
-                required 
+                value={formCliente.email || ''}
+                onChange={handleChange}
+                required
                 disabled={submitting}
               />
             </Form.Group>
-            
+
             <Form.Group className="mb-3" controlId="formTelefone">
               <Form.Label>Telefone</Form.Label>
-              <Form.Control 
-                type="text" 
+              <Form.Control
+                type="text"
                 name="telefone"
-                value={formCliente.telefone || ''} 
-                onChange={handleChange} 
+                value={formCliente.telefone || ''}
+                onChange={handleChange}
                 disabled={submitting}
               />
             </Form.Group>
-            
+
             <Form.Group className="mb-3" controlId="formEndereco">
               <Form.Label>Endereço</Form.Label>
-              <Form.Control 
+              <Form.Control
                 as="textarea"
                 rows={2}
                 name="endereco"
-                value={formCliente.endereco || ''} 
-                onChange={handleChange} 
+                value={formCliente.endereco || ''}
+                onChange={handleChange}
                 disabled={submitting}
               />
             </Form.Group>

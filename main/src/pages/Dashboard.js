@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 
 // Componente simples de Card para KPIs (mantido)
 const KPICard = ({ title, value, iconClass, variant = 'primary' }) => (
-  <Card className="text-center shadow-sm h-100 border-start border-5" style={{ borderColor: `var(--bs-${variant})` }}>
+  <Card className="text-center shadow-sm h-100 border-5">
     <Card.Body>
       <i className={`${iconClass} fa-2x text-${variant} mb-2`}></i>
       <Card.Title className="text-muted small">{title}</Card.Title>
@@ -51,11 +51,12 @@ const getStatusVariant = (status) => {
     case 'Em Reparo': return 'warning';
     case 'Aguardando Peça': return 'info';
     case 'Finalizado': return 'success';
+    case 'Cancelado' : return 'danger';
     case 'Em Análise': return 'secondary';
     case 'Aberto': return 'primary';
     case 'Crítica': return 'danger';
     case 'Alta': return 'warning';
-    default: return 'light';
+    default: return 'secondary';
   }
 };
 
@@ -65,7 +66,7 @@ const OSTable = ({ title, osList, showDeliveryDate = false }) => (
     <Card.Header as="h5" className="bg-light">{title}</Card.Header>
     <Card.Body>
       {osList.length === 0 ? (
-        <Alert variant="success" className="text-center mt-2">Nenhuma OS {title.toLowerCase()}. Ótimo trabalho!</Alert>
+        <Alert variant="success" className="text-center mt-2">Nenhuma {title}.</Alert>
       ) : (
         <Table responsive size="sm">
           <thead>
@@ -197,7 +198,7 @@ const Dashboard = () => {
         {/* Tabela de OS Urgentes (Prioridade Alta/Crítica) - Foco em Alerta */}
         <Col lg={6} className="mb-4">
           <OSTable
-            title="OS URGENTES (ALTA/CRÍTICA)"
+            title="OS URGENTES"
             osList={data.osUrgentes || []}
             showDeliveryDate={false}
           />
@@ -206,7 +207,7 @@ const Dashboard = () => {
         {/* Tabela de Próximas Entregas (Foco em Planejamento) */}
         <Col lg={6} className="mb-4">
           <OSTable
-            title="PRÓXIMAS ENTREGAS (7 DIAS)"
+            title="OS PRÓXIMAS DE ENTREGA"
             osList={data.osProximasEntregas || []}
             showDeliveryDate={true}
           />

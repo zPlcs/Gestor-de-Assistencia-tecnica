@@ -7,10 +7,10 @@ const getStatusVariant = (status) => {
 };
 
 const Funcionarios = () => {
-  const [funcionarios, setFuncionarios] = useState([]); 
+  const [funcionarios, setFuncionarios] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [formFuncionario, setFormFuncionario] = useState({});
-  
+
   // Estados de UI
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -26,7 +26,7 @@ const Funcionarios = () => {
     setError(null);
     try {
       const response = await api.get('/funcionarios');
-      setFuncionarios(response.data); 
+      setFuncionarios(response.data);
     } catch (err) {
       setError('Falha ao carregar funcionários. Verifique o Backend.');
       console.error('Erro ao buscar funcionários:', err);
@@ -44,28 +44,28 @@ const Funcionarios = () => {
     setSubmitting(true);
     setError(null);
     try {
-      if (formFuncionario._id) { 
+      if (formFuncionario._id) {
         // EDIÇÃO (PUT)
         // Nota: Não enviamos a senha em branco na edição para não sobrescrever a criptografada
         const dataToUpdate = { ...formFuncionario };
-        delete dataToUpdate.senha; 
+        delete dataToUpdate.senha;
 
         await api.put(`/funcionarios/${formFuncionario._id}`, dataToUpdate);
-        
+
       } else {
         // CRIAÇÃO (POST)
         // A senha deve ser obrigatória aqui (validação Mongoose no Backend)
         if (!formFuncionario.senha) {
-            setError('A senha inicial é obrigatória para novos funcionários.');
-            setSubmitting(false);
-            return;
+          setError('A senha inicial é obrigatória para novos funcionários.');
+          setSubmitting(false);
+          return;
         }
         await api.post('/funcionarios', formFuncionario);
       }
-      
+
       handleClose();
       fetchFuncionarios(); // Recarrega a lista
-      
+
     } catch (err) {
       setError(`Erro ao salvar funcionário: ${err.response?.data?.message || 'Erro de rede/servidor'}`);
       console.error('Erro ao salvar funcionário:', err);
@@ -73,18 +73,18 @@ const Funcionarios = () => {
       setSubmitting(false);
     }
   };
-  
+
   // C) FUNÇÃO DE DELETAR (DELETE)
   const handleDelete = async (id, nome) => {
     if (window.confirm(`Tem certeza que deseja DELETAR o funcionário: ${nome}?`)) {
-        setError(null);
-        try {
-            await api.delete(`/funcionarios/${id}`);
-            fetchFuncionarios(); // Recarrega a lista após a exclusão
-        } catch (err) {
-            setError(`Erro ao deletar funcionário: ${err.response?.data?.message || 'Erro de rede/servidor'}`);
-            console.error('Erro ao deletar funcionário:', err);
-        }
+      setError(null);
+      try {
+        await api.delete(`/funcionarios/${id}`);
+        fetchFuncionarios(); // Recarrega a lista após a exclusão
+      } catch (err) {
+        setError(`Erro ao deletar funcionário: ${err.response?.data?.message || 'Erro de rede/servidor'}`);
+        console.error('Erro ao deletar funcionário:', err);
+      }
     }
   };
 
@@ -92,23 +92,23 @@ const Funcionarios = () => {
   // ----------------------------------------------------------------------
   // FUNÇÕES DE UI (Modal, Forms)
   // ----------------------------------------------------------------------
-  
+
   const handleShow = (func = {}) => {
     // Usamos '_id' do MongoDB
-    setFormFuncionario(func._id ? func : {}); 
+    setFormFuncionario(func._id ? func : {});
     setShowModal(true);
   };
-  
+
   const handleClose = () => {
     setShowModal(false);
     setFormFuncionario({}); // Limpa o formulário ao fechar
-    setError(null); 
+    setError(null);
   };
 
   const handleChange = (e) => {
     setFormFuncionario({ ...formFuncionario, [e.target.name]: e.target.value });
   };
-  
+
   const handleSubmit = (e) => {
     e.preventDefault();
     handleSave();
@@ -124,11 +124,10 @@ const Funcionarios = () => {
       <Row className="mb-4 d-flex align-items-center">
         <Col>
           <h1>Gerenciar Funcionários</h1>
-          <p className="text-muted">Controle de acesso e produtividade da equipe.</p>
         </Col>
         <Col className="text-end">
           <Button variant="primary" onClick={() => handleShow({})}>
-            <i className="fas fa-user-plus me-2"></i> Novo Funcionário
+            Adicionar Funcionário
           </Button>
         </Col>
       </Row>
@@ -182,9 +181,9 @@ const Funcionarios = () => {
               </tbody>
             </Table>
           )}
-           {!loading && funcionarios.length === 0 && (
-                <Alert variant="info" className="text-center mt-3">Nenhum funcionário cadastrado ainda.</Alert>
-            )}
+          {!loading && funcionarios.length === 0 && (
+            <Alert variant="info" className="text-center mt-3">Nenhum funcionário cadastrado ainda.</Alert>
+          )}
         </Card.Body>
       </Card>
 
@@ -199,76 +198,76 @@ const Funcionarios = () => {
           <Modal.Body>
             <Form.Group className="mb-3">
               <Form.Label>Nome Completo *</Form.Label>
-              <Form.Control 
-                type="text" 
+              <Form.Control
+                type="text"
                 name="nome"
-                value={formFuncionario.nome || ''} 
-                onChange={handleChange} 
-                required 
+                value={formFuncionario.nome || ''}
+                onChange={handleChange}
+                required
                 disabled={submitting}
               />
             </Form.Group>
-            
+
             <Form.Group className="mb-3">
               <Form.Label>E-mail (Login) *</Form.Label>
-              <Form.Control 
-                type="email" 
+              <Form.Control
+                type="email"
                 name="email"
-                value={formFuncionario.email || ''} 
-                onChange={handleChange} 
-                required 
+                value={formFuncionario.email || ''}
+                onChange={handleChange}
+                required
                 disabled={submitting || formFuncionario._id} // Não edita o email no PUT
               />
             </Form.Group>
-            
+
             <Row>
-                <Col md={6}>
-                    <Form.Group className="mb-3">
-                    <Form.Label>Cargo / Nível de Acesso *</Form.Label>
-                    <Form.Select 
-                        name="cargo" 
-                        value={formFuncionario.cargo || ''} 
-                        onChange={handleChange} 
-                        required
-                        disabled={submitting}
-                    >
-                        <option value="">Selecione...</option>
-                        <option value="Administrador">Administrador</option>
-                        <option value="Técnico Sênior">Técnico Sênior</option>
-                        <option value="Técnico Júnior">Técnico Júnior</option>
-                        <option value="Suporte">Suporte</option>
-                    </Form.Select>
-                    </Form.Group>
-                </Col>
-                <Col md={6}>
-                    <Form.Group className="mb-3">
-                    <Form.Label>Status da Conta</Form.Label>
-                    <Form.Select 
-                        name="status" 
-                        value={formFuncionario.status || 'Ativo'} 
-                        onChange={handleChange} 
-                        disabled={submitting}
-                    >
-                        <option value="Ativo">Ativo</option>
-                        <option value="Inativo">Inativo</option>
-                    </Form.Select>
-                    </Form.Group>
-                </Col>
+              <Col md={6}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Cargo / Nível de Acesso *</Form.Label>
+                  <Form.Select
+                    name="cargo"
+                    value={formFuncionario.cargo || ''}
+                    onChange={handleChange}
+                    required
+                    disabled={submitting}
+                  >
+                    <option value="">Selecione...</option>
+                    <option value="Administrador">Administrador</option>
+                    <option value="Técnico Sênior">Técnico Sênior</option>
+                    <option value="Técnico Júnior">Técnico Júnior</option>
+                    <option value="Suporte">Suporte</option>
+                  </Form.Select>
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Status da Conta</Form.Label>
+                  <Form.Select
+                    name="status"
+                    value={formFuncionario.status || 'Ativo'}
+                    onChange={handleChange}
+                    disabled={submitting}
+                  >
+                    <option value="Ativo">Ativo</option>
+                    <option value="Inativo">Inativo</option>
+                  </Form.Select>
+                </Form.Group>
+              </Col>
             </Row>
 
             {/* Campo de Senha - Apenas para cadastro ou redefinição */}
             {!formFuncionario._id && (
-                <Form.Group className="mb-3">
-                    <Form.Label>Senha Inicial *</Form.Label>
-                    <Form.Control 
-                        type="password" 
-                        name="senha"
-                        onChange={handleChange} 
-                        required={!formFuncionario._id} // Requerida apenas na criação
-                        placeholder="Mínimo 6 caracteres"
-                        disabled={submitting}
-                    />
-                </Form.Group>
+              <Form.Group className="mb-3">
+                <Form.Label>Senha Inicial *</Form.Label>
+                <Form.Control
+                  type="password"
+                  name="senha"
+                  onChange={handleChange}
+                  required={!formFuncionario._id} // Requerida apenas na criação
+                  placeholder="Mínimo 6 caracteres"
+                  disabled={submitting}
+                />
+              </Form.Group>
             )}
 
           </Modal.Body>

@@ -151,11 +151,10 @@ const Equipamentos = () => {
       <Row className="mb-4 d-flex align-items-center">
         <Col>
           <h1>Gerenciar Equipamentos</h1>
-          <p className="text-muted">Dispositivos cadastrados e seus respectivos status.</p>
         </Col>
         <Col className="text-end">
           <Button variant="primary" onClick={() => handleShow({})}>
-            <i className="fas fa-plus-circle me-2"></i> Novo Equipamento
+            Adicionar Equipamento
           </Button>
         </Col>
       </Row>
@@ -172,7 +171,7 @@ const Equipamentos = () => {
                 <tr>
                   <th># ID</th>
                   <th>Cliente</th>
-                  <th>Nome</th> {/* NOVO: Nome do Equipamento */}
+                  <th>Nome</th> 
                   <th>Marca</th>
                   <th>Modelo</th>
                   <th>Nº Série</th>

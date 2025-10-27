@@ -119,7 +119,7 @@ const Clientes = () => {
           <h1>Gerenciar Clientes</h1>
         </Col>
         <Col className="text-end">
-          <Button variant="primary" onClick={() => handleShow({})}>
+          <Button variant="outline-secondary" onClick={() => handleShow({})}>
             Adicionar Cliente
           </Button>
         </Col>
@@ -159,11 +159,11 @@ const Clientes = () => {
                     <td>
                       {/* Botão de Edição */}
                       <Button variant="outline-secondary" size="sm" className="me-2" onClick={() => handleShow(cliente)}>
-                        <i className="fas fa-edit"></i>
+                        <i class="bi bi-pencil"></i>
                       </Button>
                       {/* Botão de Deleção */}
                       <Button variant="outline-danger" size="sm" onClick={() => handleDelete(cliente._id, cliente.nome)}>
-                        <i className="fas fa-trash-alt"></i>
+                        <i class="bi bi-trash-fill"></i>
                       </Button>
                     </td>
                   </tr>

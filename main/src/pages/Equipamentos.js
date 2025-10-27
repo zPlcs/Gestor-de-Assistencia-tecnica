@@ -153,7 +153,7 @@ const Equipamentos = () => {
           <h1>Gerenciar Equipamentos</h1>
         </Col>
         <Col className="text-end">
-          <Button variant="primary" onClick={() => handleShow({})}>
+          <Button variant="outline-secondary" onClick={() => handleShow({})}>
             Adicionar Equipamento
           </Button>
         </Col>
@@ -197,11 +197,11 @@ const Equipamentos = () => {
                     <td>
                       {/* Botão de Edição */}
                       <Button variant="outline-secondary" size="sm" className="me-2" onClick={() => handleShow(eq)} disabled={submitting}>
-                        <i className="fas fa-edit"></i>
+                        <i class="bi bi-pencil"></i>
                       </Button>
                       {/* Botão de Deleção */}
                       <Button variant="outline-danger" size="sm" onClick={() => handleDelete(eq._id, eq.numSerie)} disabled={submitting}>
-                        <i className="fas fa-trash-alt"></i>
+                        <i class="bi bi-trash-fill"></i>
                       </Button>
                     </td>
                   </tr>

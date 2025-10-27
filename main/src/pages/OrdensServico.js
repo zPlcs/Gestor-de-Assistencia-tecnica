@@ -82,7 +82,7 @@ const formatDate = (dateString) => {
                     <h1>Gerenciar Ordens de Serviço</h1>
                 </Col>
                 <Col className="text-end">
-                    <Button variant="primary" as={Link} to="/os/novo">
+                    <Button variant="outline-secondary" as={Link} to="/os/novo">
                         Criar Ordem de Serviço
                     </Button>
                 </Col>
@@ -139,10 +139,10 @@ const formatDate = (dateString) => {
                                                     to={`/os/${os._id}`} // <-- Rota de edição com o ID da OS
                                                     className="me-2"
                                                 >
-                                                    <i className="fas fa-edit"></i>
+                                                    <i class="bi bi-pencil"></i>
                                                 </Button>
                                                 <Button variant="outline-danger" size="sm" onClick={() => handleDeleteOS(os._id, os.cliente?.nome)}>
-                                                    <i className="fas fa-trash-alt"></i>
+                                                    <i class="bi bi-trash-fill"></i>
                                                 </Button>
                                             </td>
                                         </tr>

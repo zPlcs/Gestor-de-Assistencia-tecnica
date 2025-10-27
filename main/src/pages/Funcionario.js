@@ -126,7 +126,7 @@ const Funcionarios = () => {
           <h1>Gerenciar Funcionários</h1>
         </Col>
         <Col className="text-end">
-          <Button variant="primary" onClick={() => handleShow({})}>
+          <Button variant="outline-secondary" onClick={() => handleShow({})}>
             Adicionar Funcionário
           </Button>
         </Col>
@@ -169,11 +169,11 @@ const Funcionarios = () => {
                     <td>
                       {/* Botão de Edição */}
                       <Button variant="outline-secondary" size="sm" className="me-2" onClick={() => handleShow(func)} disabled={submitting}>
-                        <i className="fas fa-edit"></i>
+                        <i class="bi bi-pencil"></i>
                       </Button>
                       {/* Botão de Deleção */}
                       <Button variant="outline-danger" size="sm" onClick={() => handleDelete(func._id, func.nome)} disabled={submitting}>
-                        <i className="fas fa-trash-alt"></i>
+                        <i class="bi bi-trash-fill"></i>
                       </Button>
                     </td>
                   </tr>

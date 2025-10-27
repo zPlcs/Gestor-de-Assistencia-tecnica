@@ -29,9 +29,9 @@ const Layout = ({ children }) => {
         <Navbar bg="light" variant="light" className="shadow-sm border-bottom">
           <Container fluid>
             <Button variant="outline-secondary" onClick={toggleSidebar} className="me-3">
-              <i className="fas fa-bars"></i> {/* Ícone Hambúrguer */}
+              <i class="bi bi-list fs-5"></i>
             </Button>
-            <Navbar.Brand href="#">Gestor de OS</Navbar.Brand>
+            <Navbar.Brand href="#">Gestor PatLab</Navbar.Brand>
             {/* Aqui você pode adicionar informações de usuário, notificações, etc. */}
           </Container>
         </Navbar>

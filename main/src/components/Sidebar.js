@@ -7,10 +7,10 @@ import { Link } from 'react-router-dom';
 const Sidebar = ({ isOpen }) => {
   return (
     <div 
-      className={`bg-dark text-white p-3 d-flex flex-column sidebar-style ${isOpen ? 'sidebar-open' : 'sidebar-closed'}`}
+      className={`bg-secondary text-white p-3 d-flex flex-column sidebar-style ${isOpen ? 'sidebar-open' : 'sidebar-closed'}`}
       style={{ width: '250px', position: 'fixed', height: '100%', zIndex: 1000 }}
     >
-      <h4 className="text-center mb-4 mt-2">Menu</h4>
+      <h5 className="text-center">Menu</h5>
       
       <Nav className="flex-column">
         

@@ -10,6 +10,7 @@ const clientesRoutes = require('./src/routes/clientesRoutes');
 const funcionariosRoutes = require('./src/routes/funcionarioRoutes');
 const equipamentoRoutes = require('./src/routes/equipamentoRoutes');
 const osRoutes = require('./src/routes/osRoutes');
+const dashboardRoutes = require('./src/routes/dashboardRoutes');
 
 // 1. INICIALIZAÇÃO DO EXPRESS
 const app = express();
@@ -34,6 +35,7 @@ app.use('/api/clientes', clientesRoutes);
 app.use('/api/funcionarios', funcionariosRoutes);
 app.use('/api/equipamentos', equipamentoRoutes);
 app.use('/api/os', osRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
 // Rota de Teste
 app.get('/', (req, res) => {

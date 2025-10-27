@@ -54,11 +54,23 @@ const OrdensServico = () => {
         }
     };
 
-    const formatDate = (dateString) => {
-        if (!dateString) return 'N/A';
-        const date = new Date(dateString);
-        return date.toLocaleDateString();
-    };
+const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    
+    // 1. Cria o objeto Date
+    const date = new Date(dateString);
+    
+    // 2. Cria um novo objeto Date a partir dos componentes UTC (Ano, Mês, Dia)
+    // Isso "zera" a hora no fuso local, garantindo que o dia não volte.
+    const localDate = new Date(
+        date.getUTCFullYear(), 
+        date.getUTCMonth(), 
+        date.getUTCDate()
+    );
+    
+    // 3. Formata a data no fuso local
+    return localDate.toLocaleDateString();
+};
 
     return (
         <Container fluid className="p-4">
@@ -94,6 +106,7 @@ const OrdensServico = () => {
                                         <th>Técnico</th>
                                         <th>Entrada</th>
                                         <th>Status</th>
+                                        <th>Previsão de entrega</th>
                                         <th>Ações</th>
                                     </tr>
                                 </thead>
@@ -109,6 +122,9 @@ const OrdensServico = () => {
                                             <td>{os.tecnicoResponsavel?.nome || 'Não Atribuído'}</td>
 
                                             <td>{formatDate(os.createdAt)}</td>
+                                            <td>
+                                                {formatDate(os.previsaoEntrega)}
+                                            </td>
                                             <td>
                                                 <Badge bg={getStatusVariant(os.status)}>
                                                     {os.status}

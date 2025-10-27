@@ -6,7 +6,7 @@ import Sidebar from './Sidebar'; // Vamos criar este componente em seguida
 
 const Layout = ({ children }) => {
   // Estado para controlar se o menu lateral (Sidebar) está aberto ou fechado
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);

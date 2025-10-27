@@ -43,6 +43,10 @@ const OrdemServicoSchema = mongoose.Schema(
         enum: ['Baixa', 'Média', 'Alta', 'Crítica'],
         default: 'Média',
     },
+
+    previsaoEntrega: {
+        type: Date,
+    },
     // Dados de Resultado e Faturamento
     solucao: {
         type: String,

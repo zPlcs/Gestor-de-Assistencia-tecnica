@@ -155,7 +155,7 @@ const Clientes = () => {
                     <td>{cliente.nome}</td>
                     <td>{cliente.email}</td>
                     <td>{cliente.telefone}</td>
-                    <td>{cliente.dataCadastro ? new Date(cliente.dataCadastro).toLocaleDateString() : 'N/A'}</td>
+                    <td>{cliente.createdAt ? new Date(cliente.createdAt).toLocaleDateString() : 'N/A'}</td>
                     <td>
                       {/* Botão de Edição */}
                       <Button variant="outline-secondary" size="sm" className="me-2" onClick={() => handleShow(cliente)}>

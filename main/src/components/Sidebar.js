@@ -6,39 +6,46 @@ import { Link } from 'react-router-dom';
 
 const Sidebar = ({ isOpen }) => {
   return (
-    <div 
+    <div
       className={`bg-secondary text-white p-3 d-flex flex-column sidebar-style ${isOpen ? 'sidebar-open' : 'sidebar-closed'}`}
       style={{ width: '250px', position: 'fixed', height: '100%', zIndex: 1000 }}
     >
       <h5 className="text-center">Menu</h5>
-      
+
       <Nav className="flex-column">
-        
+
         {/* ÍNDICE: Visão Geral */}
         <Nav.Link as={Link} to="/" className="text-white">
-          <i className="fas fa-fw fa-tachometer-alt me-2"></i> Dashboard
+          Dashboard
         </Nav.Link>
-        
+
         <Nav.Link as={Link} to="/os/novo" className="text-white">
-          <i className="fas fa-fw fa-plus-circle me-2"></i> Criar Ordem de Serviço
+          Criar Ordem de Serviço
         </Nav.Link>
-        
+        <Nav.Link as={Link} to="/orcamentos/novo" className="text-white">
+          Criar Orçamento
+        </Nav.Link>
+
         <hr className="my-2 bg-secondary" />
 
         {/* MÓDULO DE SERVIÇOS */}
         <Nav.Link as={Link} to="/os" className="text-white">
-          <i className="fas fa-fw fa-tools me-2"></i> Gerenciar OS
+          Gerenciar OS
         </Nav.Link>
+        <Nav.Link as={Link} to="/orcamentos" className="text-white">
+          Gerenciar Orçamentos
+        </Nav.Link>
+
         <Nav.Link as={Link} to="/equipamentos" className="text-white">
-          <i className="fas fa-fw fa-microchip me-2"></i> Gerenciar Equipamentos
+          Gerenciar Equipamentos
         </Nav.Link>
 
         {/* MÓDULO CADASTROS */}
         <Nav.Link as={Link} to="/clientes" className="text-white">
-          <i className="fas fa-fw fa-users me-2"></i> Gerenciar Clientes
+          Gerenciar Clientes
         </Nav.Link>
         <Nav.Link as={Link} to="/funcionarios" className="text-white">
-          <i className="fas fa-fw fa-user-tie me-2"></i> Gerenciar Funcionários
+          Gerenciar Funcionários
         </Nav.Link>
       </Nav>
 

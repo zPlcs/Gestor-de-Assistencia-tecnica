@@ -12,6 +12,7 @@
     "express": "^5.1.0",
     "mongodb": "^6.20.0",
     "mongoose": "^8.19.2",
+    "pdfkit": "^0.17.2",
     "react": "^19.2.0",
     "react-bootstrap": "^2.10.10",
     "react-dom": "^19.2.0",

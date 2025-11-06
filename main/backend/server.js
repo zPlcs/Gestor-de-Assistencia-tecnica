@@ -5,6 +5,8 @@ const express = require('express');
 const cors = require('cors'); 
 const mongoose = require('mongoose'); // <-- NOVO: Importa o Mongoose
 
+const { seedDeveloperUser } = require('./src/utils/dataSeeder');
+
 // Importa a rota de Clientes (que está quebrada agora, mas corrigiremos!)
 const clientesRoutes = require('./src/routes/clientesRoutes'); 
 const funcionariosRoutes = require('./src/routes/funcionarioRoutes');
@@ -19,8 +21,14 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 // 2. Middlewares
-app.use(express.json());
-app.use(cors());
+app.use(express.json()); 
+app.use(express.urlencoded({ extended: false }));
+app.use(cors({
+    origin: 'http://localhost:3000', 
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+}));
+
 
 
 // =======================================================
@@ -28,7 +36,11 @@ app.use(cors());
 // =======================================================
 
 mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log('✅ Conectado ao MongoDB (Mongoose)!'))
+  .then(async () => {
+        console.log('✅ Conectado ao MongoDB (Mongoose)!');
+        // 🚨 CHAMA O SEED APÓS A CONEXÃO BEM-SUCEDIDA
+        await seedDeveloperUser();
+    })
   .catch(err => console.error('❌ Erro FATAL ao conectar ao MongoDB:', err));
 
 

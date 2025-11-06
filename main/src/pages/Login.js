@@ -1,48 +1,61 @@
-// src/pages/Login.js
 
 import React, { useState } from 'react';
-import { Container, Row, Col, Card, Form, Button, Alert } from 'react-bootstrap';
-// Se já estivéssemos integrados, importaríamos 'useNavigate' aqui:
-// import { useNavigate } from 'react-router-dom';
+import { Container, Row, Col, Card, Form, Button, Alert, Spinner } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
+// src/pages/Login.js (NO TOPO)
+
+// Importa o objeto 'api' como padrão, e a função 'setAuthToken' como nomeada (entre chaves)
+import  api from '../services/api';
+
 
 const Login = () => {
-  // const navigate = useNavigate(); // Para redirecionar após login
-  
-  // 1. Estado para guardar os dados do formulário
-  const [email, setEmail] = useState('');
+  const navigate = useNavigate();
+  // Estados para Usuário (email, que é o identificador no nosso Model) e Senha
+  const [email, setEmail] = useState(''); 
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false); // Para gerenciar o estado do botão
+  
+  // Estados de UI
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false); 
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-    
-    // Validação de Frontend Simples
+    setError(null); 
+
     if (!email || !password) {
-      setError('Por favor, insira seu e-mail e senha para acessar.');
+      setError('Por favor, preencha todos os campos.');
       return;
     }
     
     setLoading(true);
-    
-    // -------------------------------------------------------------------
-    // SIMULAÇÃO DE CHAMADA À API (Substituir por Axios.post() real)
-    // -------------------------------------------------------------------
-    
-    setTimeout(() => {
-      setLoading(false);
-      
-      // Simulação de Sucesso/Falha
-      if (email === 'admin@gestor.com') {
-        console.log('Login bem-sucedido simulado:', { email, password });
-        alert('Login realizado. Será redirecionado para a Dashboard (próxima etapa)');
-        // navigate('/'); // No futuro, redirecionar para a Dashboard
-      } else {
-        setError('Credenciais inválidas. Tente "admin@gestor.com"');
-      }
-      
-    }, 1500); // Simula 1.5 segundos de carregamento da API
+
+    try {
+        // Chamada à rota de login do Backend (POST /api/funcionarios/login)
+        const response = await api.post('/funcionarios/login', { 
+            email, 
+            senha: password // O nome do campo é 'senha' no nosso Backend
+        });
+        
+        const { token, nome, cargo } = response.data;
+        
+
+
+        // 🚨 ARMAZENA O TOKEN E DADOS DO USUÁRIO NO LOCAL STORAGE
+        localStorage.setItem('userToken', token);
+        localStorage.setItem('userName', nome);
+        localStorage.setItem('userCargo', cargo);
+        
+        // Redireciona para o Dashboard (ou a rota protegida definida no App.js)
+        navigate('/dashboard', { replace: true }); 
+
+    } catch (err) {
+        // Trata erros 401 (Não Autorizado) e outros erros de rede/servidor
+        const errorMessage = err.response?.data?.message || 'Falha na comunicação com o servidor. Verifique o Backend.';
+        setError(errorMessage);
+        console.error('Erro de Autenticação:', err.response?.data || err);
+    } finally {
+        setLoading(false);
+    }
   };
 
   return (
@@ -53,27 +66,25 @@ const Login = () => {
     >
       <Row className="w-100">
         <Col md={{ span: 6, offset: 3 }} lg={{ span: 4, offset: 4 }}>
-          
           <Card className="shadow-lg border-0">
             <Card.Body className="p-5">
               <div className="text-center mb-4">
                 <h2 className="mb-0 text-primary">Gestão de OS</h2>
-                <p className="text-muted">Faça seu login para continuar</p>
+                <p className="text-muted">Acesso ao Sistema</p>
               </div>
 
-              {/* Mensagem de Erro */}
               {error && <Alert variant="danger">{error}</Alert>}
               
               <Form onSubmit={handleSubmit}>
                 <Form.Group className="mb-3" controlId="formBasicEmail">
-                  <Form.Label>E-mail</Form.Label>
+                  <Form.Label>Nome de Usuário</Form.Label> 
                   <Form.Control 
-                    type="email" 
-                    placeholder="Seu e-mail" 
+                    type="text" 
+                    placeholder="Nome de Usuário ou E-mail (Ex: admin@teste.com)" 
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    disabled={loading} // Não permite digitar durante o loading
+                    disabled={loading}
                   />
                 </Form.Group>
 
@@ -81,27 +92,18 @@ const Login = () => {
                   <Form.Label>Senha</Form.Label>
                   <Form.Control 
                     type="password" 
-                    placeholder="Sua senha secreta" 
+                    placeholder="Sua senha" 
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    disabled={loading} // Não permite digitar durante o loading
+                    disabled={loading}
                   />
                 </Form.Group>
 
-                <Button 
-                  variant="primary" 
-                  type="submit" 
-                  className="w-100 mt-2"
-                  disabled={loading}
-                >
-                  {loading ? 'Aguarde...' : 'Entrar no Sistema'}
+                <Button variant="primary" type="submit" className="w-100 mt-3" disabled={loading}>
+                  {loading ? <Spinner size="sm" animation="border" /> : 'Entrar'}
                 </Button>
               </Form>
-
-              <div className="text-center mt-3">
-                <a href="/recuperar-senha" className="text-muted small">Esqueceu a senha?</a>
-              </div>
               
             </Card.Body>
           </Card>

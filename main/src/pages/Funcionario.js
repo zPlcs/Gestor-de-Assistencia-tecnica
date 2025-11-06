@@ -35,9 +35,9 @@ const Funcionarios = () => {
     }
   };
 
-  useEffect(() => {
+useEffect(() => {
     fetchFuncionarios();
-  }, []); // Carrega funcionários na montagem
+}, []);
 
   // B) FUNÇÃO DE CRIAÇÃO/EDIÇÃO (CREATE/UPDATE)
   const handleSave = async () => {

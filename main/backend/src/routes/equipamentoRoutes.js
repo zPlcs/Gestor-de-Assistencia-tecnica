@@ -2,12 +2,18 @@
 
 const express = require('express');
 const { criarEquipamento, listarEquipamentos, atualizarEquipamento, deletarEquipamento } = require('../controllers/equipamentoController');
+const { protegerRota, permitirAcesso } = require('../middleware/authMiddleware'); 
 const router = express.Router();
 
-// Rotas para Criar (POST) e Listar Todos (GET)
-router.route('/').post(criarEquipamento).get(listarEquipamentos);
+const SERVICO_ACCESS = ['Administrador', 'Técnico Sênior', 'Técnico Júnior', 'Suporte'];
 
-// Rotas para Atualizar (PUT) e Deletar (DELETE)
-router.route('/:id').put(atualizarEquipamento).delete(deletarEquipamento);
+// Rotas Protegidas
+router.route('/')
+    .post(protegerRota, permitirAcesso(SERVICO_ACCESS), criarEquipamento)
+    .get(protegerRota, permitirAcesso(SERVICO_ACCESS), listarEquipamentos);
+
+router.route('/:id')
+    .put(protegerRota, permitirAcesso(SERVICO_ACCESS), atualizarEquipamento)
+    .delete(protegerRota, permitirAcesso(SERVICO_ACCESS), deletarEquipamento);
 
 module.exports = router;

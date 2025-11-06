@@ -1,6 +1,36 @@
 // gestor-backend/src/controllers/funcionarioController.js
 
 const Funcionario = require('../models/Funcionario');
+const generateToken = require('../utils/generateToken'); // <-- Necessário para criar o JWT
+const bcrypt = require('bcryptjs');
+
+const authFuncionario = async (req, res) => {
+    // Nota: O Front-end envia 'email' e 'senha'
+    const { email, senha } = req.body; 
+
+    try {
+        const funcionario = await Funcionario.findOne({ email });
+
+        // 1. Verifica se o funcionário existe
+        // 2. Usa o método matchPassword (que está no Model Funcionario.js) para comparar a senha
+        if (funcionario && (await funcionario.matchPassword(senha))) {
+            res.json({
+                _id: funcionario._id,
+                nome: funcionario.nome,
+                email: funcionario.email,
+                cargo: funcionario.cargo,
+                status: funcionario.status,
+                token: generateToken(funcionario._id), // Gera e envia o JWT
+            });
+        } else {
+            // Retorna 401 se a credencial não for válida
+            res.status(401).json({ message: 'E-mail ou senha inválidos.' });
+        }
+    } catch (error) {
+        console.error('Erro de Autenticação:', error);
+        res.status(500).json({ message: 'Erro de servidor durante a autenticação.', error: error.message });
+    }
+};
 
 // @desc    Criar novo Funcionário
 // @route   POST /api/funcionarios
@@ -75,6 +105,7 @@ const deletarFuncionario = async (req, res) => {
 };
 
 module.exports = {
+    authFuncionario,
     criarFuncionario,
     listarFuncionarios,
     atualizarFuncionario,

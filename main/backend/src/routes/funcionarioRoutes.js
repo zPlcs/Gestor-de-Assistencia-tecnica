@@ -1,13 +1,21 @@
 // gestor-backend/src/routes/funcionarioRoutes.js
 
 const express = require('express');
-const { criarFuncionario, listarFuncionarios, atualizarFuncionario, deletarFuncionario } = require('../controllers/funcionarioController');
+const { criarFuncionario, listarFuncionarios, atualizarFuncionario, deletarFuncionario, authFuncionario } = require('../controllers/funcionarioController');
+const { protegerRota, permitirAcesso } = require('../middleware/authMiddleware'); 
 const router = express.Router();
 
-// Rotas para Criar (POST) e Listar Todos (GET)
-router.route('/').post(criarFuncionario).get(listarFuncionarios);
+// Permissão para gerenciar funcionários: APENAS ADMINISTRADOR
+const ADMIN_ONLY = ['Administrador']; 
 
-// Rotas para Atualizar (PUT) e Deletar (DELETE)
-router.route('/:id').put(atualizarFuncionario).delete(deletarFuncionario);
+// Rota de Login (Pública) e Criação (Inicial - deve ser removida após o seed)
+router.post('/login', authFuncionario); 
+router.post('/', criarFuncionario); 
+
+// Rotas Protegidas (GET, PUT, DELETE)
+router.get('/', protegerRota, permitirAcesso(ADMIN_ONLY), listarFuncionarios);
+router.route('/:id')
+    .put(protegerRota, permitirAcesso(ADMIN_ONLY), atualizarFuncionario)
+    .delete(protegerRota, permitirAcesso(ADMIN_ONLY), deletarFuncionario);
 
 module.exports = router;

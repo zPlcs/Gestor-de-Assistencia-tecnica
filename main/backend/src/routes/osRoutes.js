@@ -5,7 +5,7 @@ const { criarOS, listarOS, atualizarOS, deletarOS, buscarOS, listarOSsemOrcament
 const { protegerRota, permitirAcesso } = require('../middleware/authMiddleware'); 
 const router = express.Router();
 
-const SERVICO_ACCESS = ['Administrador', 'Técnico Sênior', 'Técnico Júnior', 'Suporte'];
+const SERVICO_ACCESS = ['Desenvolvedor', 'Administrador', 'Técnico Sênior', 'Técnico Júnior', 'Suporte'];
 
 // Rotas de listagem estática e criação
 router.route('/')

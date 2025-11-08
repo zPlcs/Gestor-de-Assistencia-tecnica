@@ -70,12 +70,11 @@ const GerenciarOrcamentos = () => {
             <Row className="mb-4 d-flex align-items-center">
                 <Col>
                     <h1>Gerenciar Orçamentos</h1>
-                    <p className="text-muted">Acompanhe a aprovação e os valores dos serviços.</p>
                 </Col>
                 <Col className="text-end">
                     {/* Botão de Nova OS, pois o orçamento nasce da OS */}
-                    <Button variant="success" as={Link} to="/os/novo">
-                        <i className="bi bi-plus-circle me-2"></i> Criar Nova OS/Orçamento
+                    <Button variant="outline-secondary" as={Link} to="/os/novo">
+                        Criar Nova OS/Orçamento
                     </Button>
                 </Col>
             </Row>
@@ -115,33 +114,33 @@ const GerenciarOrcamentos = () => {
                                                 {orc.statusAprovacao}
                                             </Badge>
                                         </td>
-                                     <td>
+                                        <td>
                                             {/* 🚨 BOTÃO 1: SOMENTE VER */}
-                                            <Button 
-                                                variant="outline-secondary" 
-                                                size="sm" 
-                                                as={Link} 
-                                                to={`/orcamentos/${orc._id}/view`} 
+                                            <Button
+                                                variant="outline-secondary"
+                                                size="sm"
+                                                as={Link}
+                                                to={`/orcamentos/${orc._id}/view`}
                                                 className="me-2"
                                             >
                                                 <i className="bi bi-eye"></i> Ver
                                             </Button>
 
                                             {/* 🚨 BOTÃO 2: EDITAR */}
-                                            <Button 
-                                                variant="outline-primary" 
-                                                size="sm" 
-                                                as={Link} 
-                                                to={`/orcamentos/${orc._id}/editar`} 
+                                            <Button
+                                                variant="outline-primary"
+                                                size="sm"
+                                                as={Link}
+                                                to={`/orcamentos/${orc._id}/editar`}
                                                 className="me-2"
                                             >
                                                 <i className="bi bi-pencil"></i> Editar
                                             </Button>
 
                                             {/* 🚨 BOTÃO 3: EXCLUIR */}
-                                            <Button 
-                                                variant="outline-danger" 
-                                                size="sm" 
+                                            <Button
+                                                variant="outline-danger"
+                                                size="sm"
                                                 onClick={() => handleDeleteOrcamento(orc._id)}
                                             >
                                                 <i className="bi bi-trash-fill"></i> Excluir

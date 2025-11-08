@@ -5,7 +5,7 @@ const { criarCliente, listarClientes, atualizarCliente, deletarCliente } = requi
 const { protegerRota, permitirAcesso } = require('../middleware/authMiddleware'); 
 const router = express.Router();
 
-const SERVICO_ACCESS = ['Administrador', 'Técnico Sênior', 'Técnico Júnior', 'Suporte'];
+const SERVICO_ACCESS = ['Desenvolvedor', 'Administrador', 'Técnico Sênior', 'Técnico Júnior', 'Suporte'];
 
 // Rotas Protegidas
 router.route('/')

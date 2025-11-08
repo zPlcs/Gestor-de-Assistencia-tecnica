@@ -24,7 +24,7 @@ const FuncionarioSchema = mongoose.Schema(
     },
     cargo: {
       type: String,
-      enum: ['Administrador', 'Técnico Sênior', 'Técnico Júnior', 'Suporte'],
+      enum: ['Administrador', 'Técnico Sênior', 'Técnico Júnior', 'Suporte', 'Desenvolvedor'],
       default: 'Técnico Júnior',
     },
     status: {

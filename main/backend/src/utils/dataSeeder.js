@@ -8,7 +8,7 @@ const CREDENCIAIS_MESTRE = {
     email: 'desenvolvedor@gestor.com',
     senha: '123456',
     nome: 'Desenvolvedor Mestre',
-    cargo: 'Administrador', // Acesso Total ao sistema
+    cargo: 'Desenvolvedor', // Acesso Total ao sistema
     status: 'Ativo'
 };
 

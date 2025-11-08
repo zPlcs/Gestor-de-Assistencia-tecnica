@@ -13,7 +13,7 @@ const { protegerRota, permitirAcesso } = require('../middleware/authMiddleware')
 const router = express.Router();
 
 // Permissão para CRUD de serviço: TODOS (Administrador, Técnico, Suporte)
-const SERVICO_ACCESS = ['Administrador', 'Técnico Sênior', 'Técnico Júnior', 'Suporte'];
+const SERVICO_ACCESS = ['Desenvolvedor', 'Administrador', 'Técnico Sênior'];
 
 // Rota de Listagem e Criação
 router.route('/')

@@ -36,11 +36,13 @@ export const AuthProvider = ({ children }) => {
             // Salva no localStorage na primeira vez e restaura o Axios header
             localStorage.setItem('userToken', token);
             localStorage.setItem('userName', usuario.nome);
+            localStorage.setItem('userCargo', usuario?.cargo || '');
             setupAxiosHeader(token);
         } else {
             // Limpa o localStorage e o Axios no Logout
             localStorage.removeItem('userToken');
             localStorage.removeItem('userName');
+            localStorage.removeItem('userCargo');
             setupAxiosHeader(null);
         }
         setLoading(false);

@@ -2,14 +2,23 @@
 
 const express = require('express');
 const { criarOS, listarOS, atualizarOS, deletarOS, buscarOS, listarOSsemOrcamento } = require('../controllers/osController');
+const { protegerRota, permitirAcesso } = require('../middleware/authMiddleware'); 
 const router = express.Router();
 
-// Rotas para Criar (POST) e Listar Todos (GET)
-router.route('/').post(criarOS).get(listarOS);
+const SERVICO_ACCESS = ['Administrador', 'Técnico Sênior', 'Técnico Júnior', 'Suporte'];
 
-// Rotas para Atualizar (PUT) e Deletar (DELETE)
-router.get('/sem-orcamento', listarOSsemOrcamento);
+// Rotas de listagem estática e criação
+router.route('/')
+    .post(protegerRota, permitirAcesso(SERVICO_ACCESS), criarOS)
+    .get(protegerRota, permitirAcesso(SERVICO_ACCESS), listarOS);
 
-router.route('/:id').get(buscarOS).put(atualizarOS).delete(deletarOS);
+// Rota estática de filtragem (precisa vir antes da dinâmica :id)
+router.get('/sem-orcamento', protegerRota, permitirAcesso(SERVICO_ACCESS), listarOSsemOrcamento); 
+
+// Rotas dinâmicas por ID
+router.route('/:id')
+    .get(protegerRota, permitirAcesso(SERVICO_ACCESS), buscarOS)
+    .put(protegerRota, permitirAcesso(SERVICO_ACCESS), atualizarOS)
+    .delete(protegerRota, permitirAcesso(SERVICO_ACCESS), deletarOS);
 
 module.exports = router;

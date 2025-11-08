@@ -1,34 +1,44 @@
-// gestor-backend/src/middleware/authMiddleware.js (MODO DE DESENVOLVIMENTO: SEM VERIFICAÇÃO)
+// gestor-backend/src/middleware/authMiddleware.js (VERSÃO FINAL DE SEGURANÇA)
 
+const jwt = require('jsonwebtoken');
 const asyncHandler = require('express-async-handler');
 const Funcionario = require('../models/Funcionario'); 
 
-// 🚨 Middleware 1: Passagem Livre (Apenas para Testes/Debug)
-// Esta função faz o 'next()' sem verificar o token.
+// Middleware 1: Garante que o Token é VÁLIDO e busca o cargo REAL do DB
 const protegerRota = asyncHandler(async (req, res, next) => {
-    
-    // 1. Log de Aviso
-    console.log('--- AVISO: ROTA PROTEGIDA IGNORADA (Modo Dev) ---');
-    
-    // 2. Simulação de Usuário (Obrigatório para o middleware 'permitirAcesso' funcionar)
-    // Buscamos o Admin Mestre (se ele existir) e anexamos ao req.usuario
-    const usuarioMestre = await Funcionario.findOne({ email: 'desenvolvedor@gestor.com' }).select('-senha');
-    
-    if (usuarioMestre) {
-        req.usuario = usuarioMestre; 
-    } else {
-        // Se o seeder ainda não rodou, usa um placeholder
-        req.usuario = { cargo: 'Administrador', nome: 'DEV_PLACEHOLDER' };
+    let token;
+
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+        try {
+            token = req.headers.authorization.split(' ')[1];
+            
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+            // 🚨 ESSENCIAL: Busca o usuário real pelo ID do Token
+            req.usuario = await Funcionario.findById(decoded.id).select('-senha');
+
+            if (!req.usuario) {
+                res.status(401);
+                throw new Error('Usuário não encontrado.');
+            }
+
+            next();
+        } catch (error) {
+            console.error('Erro de Autenticação do Token:', error);
+            res.status(401); 
+            throw new Error('Não autorizado, token inválido ou expirado.');
+        }
     }
-    
-    // 3. Permissão para seguir
-    next(); 
+
+    if (!token) {
+        res.status(401);
+        throw new Error('Não autorizado, token não fornecido.');
+    }
 });
 
-// Middleware 2: Checagem de Nível de Acesso (Ainda funcional, mas usa o usuário simulado acima)
+// Middleware 2: Checagem de Nível de Acesso (Permanece o mesmo para checar o req.usuario.cargo real)
 const permitirAcesso = (cargosPermitidos) => {
     return (req, res, next) => {
-        // O código de checagem de cargo será executado com o usuário simulado (dev/admin)
         if (!req.usuario || !cargosPermitidos.includes(req.usuario.cargo)) {
             res.status(403); 
             throw new Error('Acesso negado. Você não possui o nível de permissão necessário.');

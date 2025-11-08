@@ -3,17 +3,17 @@
 import React from 'react';
 import { Nav, Button } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom'; // <-- NOVO: Importar useNavigate
+import { useAuth } from '../context/AuthContext';
 
 const Sidebar = ({ isOpen }) => {
   const navigate = useNavigate(); // <-- Inicializa o useNavigate
+  const { logout } = useAuth();
 
-  const handleLogout = () => {
-    // 1. Limpa todas as chaves de autenticação
-    localStorage.removeItem('userToken');
-    localStorage.removeItem('userName');
-    localStorage.removeItem('userCargo');
+const handleLogout = () => {
+    // 1. Limpa o token do Contexto e do Axios (Função do Provider)
+    logout(); 
     
-    // 2. Redireciona o usuário para a página de Login
+    // 2. Redireciona o usuário para a página de Login (Função do Router)
     navigate('/login', { replace: true });
   };
   
@@ -58,6 +58,7 @@ const Sidebar = ({ isOpen }) => {
         <Nav.Link as={Link} to="/equipamentos" className="text-white">
           <i className="bi bi-motherboard me-2"></i> Gerenciar Equipamentos
         </Nav.Link>
+        {}
         <Nav.Link as={Link} to="/funcionarios" className="text-white">
           <i className="bi bi-person-badge-fill me-2"></i> Gerenciar Funcionários
         </Nav.Link>

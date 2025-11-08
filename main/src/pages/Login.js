@@ -1,16 +1,15 @@
-
 import React, { useState } from 'react';
 import { Container, Row, Col, Card, Form, Button, Alert, Spinner } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-// src/pages/Login.js (NO TOPO)
-
-// Importa o objeto 'api' como padrão, e a função 'setAuthToken' como nomeada (entre chaves)
-import  api from '../services/api';
-
+import api from '../services/api'; // Importa o objeto Axios
+import { useAuth } from '../context/AuthContext'; // 🚨 IMPORTA O CONTEXTO DE AUTENTICAÇÃO
 
 const Login = () => {
   const navigate = useNavigate();
-  // Estados para Usuário (email, que é o identificador no nosso Model) e Senha
+  // 🚨 Puxa a função setAuthToken do Contexto
+  const { setAuthToken } = useAuth(); 
+  
+  // Estados para Usuário e Senha
   const [email, setEmail] = useState(''); 
   const [password, setPassword] = useState('');
   
@@ -33,23 +32,24 @@ const Login = () => {
         // Chamada à rota de login do Backend (POST /api/funcionarios/login)
         const response = await api.post('/funcionarios/login', { 
             email, 
-            senha: password // O nome do campo é 'senha' no nosso Backend
+            senha: password
         });
         
         const { token, nome, cargo } = response.data;
-        
 
-
-        // 🚨 ARMAZENA O TOKEN E DADOS DO USUÁRIO NO LOCAL STORAGE
-        localStorage.setItem('userToken', token);
-        localStorage.setItem('userName', nome);
-        localStorage.setItem('userCargo', cargo);
+        // 🚨 MUDANÇA: SALVA O TOKEN E OS DADOS APENAS NA MEMÓRIA (Contexto)
+        // O setAuthToken também seta o token no cabeçalho do Axios.
+        setAuthToken(token, { nome, cargo }); 
         
-        // Redireciona para o Dashboard (ou a rota protegida definida no App.js)
+        // 🚨 REMOVEMOS TODAS AS LINHAS DE LOCALSTORAGE:
+        // localStorage.setItem('userToken', token);
+        // localStorage.setItem('userName', nome);
+        // localStorage.setItem('userCargo', cargo);
+        
+        // Redireciona para o Dashboard
         navigate('/dashboard', { replace: true }); 
 
     } catch (err) {
-        // Trata erros 401 (Não Autorizado) e outros erros de rede/servidor
         const errorMessage = err.response?.data?.message || 'Falha na comunicação com o servidor. Verifique o Backend.';
         setError(errorMessage);
         console.error('Erro de Autenticação:', err.response?.data || err);

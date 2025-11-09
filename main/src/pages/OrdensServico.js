@@ -123,7 +123,6 @@ const OrdensServico = () => {
 
                                             <td>{formatDate(os.createdAt)}</td>
                                             <td>
-
                                                 <Badge bg={getStatusVariant(os.status)}>
                                                     {os.status}
                                                 </Badge>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Container, Form, Button, Card, Row, Col, Alert, Spinner, Badge, InputGroup, Table } from 'react-bootstrap';
 import api from '../services/api';
 

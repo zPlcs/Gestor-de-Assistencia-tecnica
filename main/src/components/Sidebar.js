@@ -45,7 +45,7 @@ const Sidebar = ({ isOpen }) => {
         <Nav.Link as={Link} to="/os" className="text-white">
           Gerenciar OS
         </Nav.Link>
-        {userCargo != 'Técnico Júnior' ? (
+        {userCargo !== 'Técnico Júnior' ? (
           <Nav.Link as={Link} to="/orcamentos" className="text-white">
             Gerenciar Orçamentos
           </Nav.Link>) : null}
@@ -60,7 +60,7 @@ const Sidebar = ({ isOpen }) => {
         <Nav.Link as={Link} to="/equipamentos" className="text-white">
           Gerenciar Equipamentos
         </Nav.Link>
-        {userCargo != 'Técnico Júnior' ? (
+        {userCargo !== 'Técnico Júnior' ? (
           <Nav.Link as={Link} to="/funcionarios" className="text-white">
             Gerenciar Funcionários
           </Nav.Link>

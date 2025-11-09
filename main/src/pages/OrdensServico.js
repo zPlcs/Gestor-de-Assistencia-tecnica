@@ -6,15 +6,15 @@ import api from '../services/api';
 // Função auxiliar para mudar a cor do Status (deve corresponder ao Model da OS)
 const getStatusVariant = (status) => {
     switch (status) {
-    case 'Em Reparo': return 'warning';
-    case 'Aguardando Peça': return 'info';
-    case 'Finalizado': return 'success';
-    case 'Cancelado' : return 'danger';
-    case 'Em Análise': return 'secondary';
-    case 'Aberto': return 'primary';
-    case 'Crítica': return 'danger';
-    case 'Alta': return 'warning';
-    default: return 'secondary';
+        case 'Em Reparo': return 'warning';
+        case 'Aguardando Peça': return 'info';
+        case 'Finalizado': return 'success';
+        case 'Cancelado': return 'danger';
+        case 'Em Análise': return 'secondary';
+        case 'Aberto': return 'primary';
+        case 'Crítica': return 'danger';
+        case 'Alta': return 'warning';
+        default: return 'secondary';
     }
 };
 
@@ -57,23 +57,23 @@ const OrdensServico = () => {
         }
     };
 
-const formatDate = (dateString) => {
-    if (!dateString) return 'N/A';
-    
-    // 1. Cria o objeto Date
-    const date = new Date(dateString);
-    
-    // 2. Cria um novo objeto Date a partir dos componentes UTC (Ano, Mês, Dia)
-    // Isso "zera" a hora no fuso local, garantindo que o dia não volte.
-    const localDate = new Date(
-        date.getUTCFullYear(), 
-        date.getUTCMonth(), 
-        date.getUTCDate()
-    );
-    
-    // 3. Formata a data no fuso local
-    return localDate.toLocaleDateString();
-};
+    const formatDate = (dateString) => {
+        if (!dateString) return 'N/A';
+
+        // 1. Cria o objeto Date
+        const date = new Date(dateString);
+
+        // 2. Cria um novo objeto Date a partir dos componentes UTC (Ano, Mês, Dia)
+        // Isso "zera" a hora no fuso local, garantindo que o dia não volte.
+        const localDate = new Date(
+            date.getUTCFullYear(),
+            date.getUTCMonth(),
+            date.getUTCDate()
+        );
+
+        // 3. Formata a data no fuso local
+        return localDate.toLocaleDateString();
+    };
 
     return (
         <Container fluid className="p-4">
@@ -123,12 +123,13 @@ const formatDate = (dateString) => {
 
                                             <td>{formatDate(os.createdAt)}</td>
                                             <td>
-                                                {formatDate(os.previsaoEntrega)}
-                                            </td>
-                                            <td>
+
                                                 <Badge bg={getStatusVariant(os.status)}>
                                                     {os.status}
                                                 </Badge>
+                                            </td>
+                                            <td>
+                                                {formatDate(os.previsaoEntrega)}
                                             </td>
                                             <td>
                                                 {/* Ações: Visualizar/Editar (A rota /os/:id virá depois) */}

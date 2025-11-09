@@ -20,11 +20,24 @@ const itemOrcamentoController = require('./src/controllers/itemOrcamentoControll
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+const allowedOrigins = [
+    'http://localhost:3000', 
+    'https://gestor-de-assistencia-tecnica.vercel.app' 
+    // Adicione outros subdomínios Vercel se for o caso
+];
+
 // 2. Middlewares
 app.use(express.json()); 
 app.use(express.urlencoded({ extended: false }));
 app.use(cors({
-    origin: 'http://localhost:3000', 
+    origin: (origin, callback) => {
+        // Permite requisições sem 'origin' (como apps móveis, curl) e as origens permitidas
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
 }));

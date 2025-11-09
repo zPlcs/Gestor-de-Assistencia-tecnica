@@ -1,10 +1,12 @@
-// src/services/api.js
-
 import axios from 'axios';
 
-// A baseURL é o endereço do seu servidor Node/Express
+// O Vercel define a variável de ambiente REACT_APP_API_BASE_URL
+const BASE_URL = process.env.REACT_APP_API_BASE_URL 
+                   ? process.env.REACT_APP_API_BASE_URL 
+                   : 'http://localhost:3001/api'; 
+
 const api = axios.create({
-  baseURL: 'http://localhost:3001/api', 
+  baseURL: BASE_URL, 
 });
 
 export default api;

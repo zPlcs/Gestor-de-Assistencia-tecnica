@@ -14,19 +14,7 @@ const KPICard = ({ title, value, iconClass, variant = 'primary' }) => (
   </Card>
 );
 
-const PlaceholderBox = ({ title, height = '300px' }) => (
-  <Card className="shadow-sm h-100">
-    <Card.Header as="h5" className="bg-light">{title}</Card.Header>
-    <Card.Body>
-      <div
-        style={{ height: height, backgroundColor: '#f8f9fa', border: '1px dashed #ced4da' }}
-        className="d-flex align-items-center justify-content-center text-muted"
-      >
-        Estrutura pronta para: **{title}**
-      </div>
-    </Card.Body>
-  </Card>
-);
+
 
 // Função para formatar a data (igual ao OrdensServico.js)
 const formatDate = (dateString) => {

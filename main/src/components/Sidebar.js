@@ -39,6 +39,7 @@ const Sidebar = ({ isOpen }) => {
           Criar Ordem de Serviço
         </Nav.Link>
 
+
         <hr className="my-2 bg-secondary" />
 
         {/* MÓDULO DE SERVIÇOS */}
@@ -46,7 +47,7 @@ const Sidebar = ({ isOpen }) => {
           Gerenciar OS
         </Nav.Link>
         {userCargo !== 'Técnico Júnior' ? (
-          <Nav.Link as={Link} to="/orcamentos" className="text-white">
+          <Nav.Link as={Link} to="/orcamentos/novo" className="text-white">
             Gerenciar Orçamentos
           </Nav.Link>) : null}
 

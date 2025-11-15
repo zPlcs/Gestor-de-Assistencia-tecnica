@@ -27,7 +27,6 @@ router.route('/:id')
     .delete(protegerRota, permitirAcesso(SERVICO_ACCESS), deletarOrcamento);
 
 // Rota específica para Geração de PDF
-router.get('/:id/pdf', protegerRota, permitirAcesso(SERVICO_ACCESS), gerarPDFOrcamento);
-
+router.get('/:id/pdf', gerarPDFOrcamento);
 
 module.exports = router;

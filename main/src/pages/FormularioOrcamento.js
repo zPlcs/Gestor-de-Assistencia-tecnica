@@ -8,7 +8,7 @@ import { useAuth } from '../context/AuthContext';
 const TIPO_ORCAMENTO_OPTIONS = ['Reparo', 'Montagem', 'Revisão/Manutenção'];
 const STATUS_APROVACAO_OPTIONS = ['Pendente', 'Aprovado', 'Rejeitado'];
 
-const { token, logout } = useAuth(); 
+const { token, logout } = useAuth();
 const [isDownloading, setIsDownloading] = useState(false);
 
 // Função auxiliar para formatar a moeda
@@ -207,64 +207,65 @@ const FormularioOrcamento = ({ isReadOnly = false }) => {
 
     // FUNÇÃO DE DOWNLOAD DE PDF
     const handleGeneratePDF = async () => {
-    if (!orcamento._id) {
-        alert('Erro: O orçamento precisa ser salvo antes de gerar o PDF.');
-        return;
-    }
-
-    // ⚠️ Checagem crítica: Se o token for nulo (apesar do AuthGuard), a requisição falhará.
-    if (!token) {
-        alert('Sessão inválida. Por favor, faça login novamente.');
-        // Se o token for null, força o logout
-        logout(); 
-        return;
-    }
-
-    setIsDownloading(true);
-    setError(null);
-    
-    try {
-        // 1. REQUISIÇÃO COM AXIOS: O Interceptor anexa o Token automaticamente
-        const response = await api.get(`/orcamentos/${orcamento._id}/pdf`, {
-            // ESSENCIAL: Diz ao Axios que esperamos dados binários (o arquivo PDF)
-            responseType: 'blob', 
-        });
-
-        // 2. Criação do Blob (Dados brutos do PDF)
-        const file = new Blob([response.data], { type: 'application/pdf' });
-
-        // 3. Criação da URL temporária para o Blob
-        const fileURL = window.URL.createObjectURL(file);
-
-        // 4. Cria um link invisível para iniciar o download
-        const link = document.createElement('a');
-        link.href = fileURL;
-        
-        // 5. Define o nome do arquivo (o cabeçalho do Backend também define, mas isto é um fallback seguro)
-        link.setAttribute('download', `orcamento_${orcamento._id}.pdf`); 
-        
-        // 6. Simula o clique e limpa
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-        
-        // 7. Limpa a URL temporária
-        window.URL.revokeObjectURL(fileURL);
-
-
-    } catch (error) {
-        console.error('Erro ao gerar PDF:', error.response?.data || error.message);
-        
-        // Se for um 403 Forbidden, informa sobre a falta de permissão
-        if (error.response && error.response.status === 403) {
-            setError('Acesso negado. Você não possui permissão para gerar este PDF (403 Forbidden).');
-        } else {
-            setError('Falha na geração do documento. Verifique o Backend.');
+        if (!orcamento._id) {
+            alert('Erro: O orçamento precisa ser salvo antes de gerar o PDF.');
+            return;
         }
-    } finally {
-        setIsDownloading(false);
-    }
-};
+
+        // ⚠️ Checagem crítica: Se o token for nulo (apesar do AuthGuard), a requisição falhará.
+        if (!token) {
+            alert('Sessão inválida. Por favor, faça login novamente.');
+            // Se o token for null, força o logout
+            logout();
+            return;
+        }
+
+        setIsDownloading(true);
+        setError(null);
+
+        try {
+            // 1. REQUISIÇÃO COM AXIOS: O Interceptor anexa o Token automaticamente
+            const response = await api.get(`/orcamentos/${orcamento._id}/pdf`, {
+                // ESSENCIAL: Diz ao Axios que esperamos dados binários (o arquivo PDF)
+                responseType: 'blob',
+                withCredentials: true
+            });
+
+            // 2. Criação do Blob (Dados brutos do PDF)
+            const file = new Blob([response.data], { type: 'application/pdf' });
+
+            // 3. Criação da URL temporária para o Blob
+            const fileURL = window.URL.createObjectURL(file);
+
+            // 4. Cria um link invisível para iniciar o download
+            const link = document.createElement('a');
+            link.href = fileURL;
+
+            // 5. Define o nome do arquivo (o cabeçalho do Backend também define, mas isto é um fallback seguro)
+            link.setAttribute('download', `orcamento_${orcamento._id}.pdf`);
+
+            // 6. Simula o clique e limpa
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+
+            // 7. Limpa a URL temporária
+            window.URL.revokeObjectURL(fileURL);
+
+
+        } catch (error) {
+            console.error('Erro ao gerar PDF:', error.response?.data || error.message);
+
+            // Se for um 403 Forbidden, informa sobre a falta de permissão
+            if (error.response && error.response.status === 403) {
+                setError('Acesso negado. Você não possui permissão para gerar este PDF (403 Forbidden).');
+            } else {
+                setError('Falha na geração do documento. Verifique o Backend.');
+            }
+        } finally {
+            setIsDownloading(false);
+        }
+    };
 
     const clienteNome = osData.cliente?.nome || 'N/A';
     const equipamentoInfo = osData.equipamento

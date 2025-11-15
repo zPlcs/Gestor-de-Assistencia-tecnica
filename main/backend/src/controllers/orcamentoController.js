@@ -209,27 +209,41 @@ const gerarPDFOrcamento = async (req, res) => {
         // --- TABELA DE ITENS (Lógica de Loop) ---
         // ----------------------------------------------------
 
-        doc.fontSize(12).fillColor('#000').text('ITENS E SERVIÇOS', { underline: true });
+        // 🚨 CORREÇÃO: CENTRALIZAR O TÍTULO
+        doc.fontSize(12).fillColor('#000').text('ITENS E SERVIÇOS', { align: 'center', underline: true });
         doc.moveDown(0.5);
 
         const tableTop = doc.y;
         doc.fontSize(9).fillColor('#333');
 
-        // Posições X para as colunas
+        // Posições X para as colunas (Ajuste para Link)
         const colX = {
             tipo: 50,
             descricao: 100,
-            qtd: 350,
-            vUnit: 400,
-            subtotal: 480
+            link: 270, // 🚨 NOVO: Posição do Link
+            qtd: 380, // Ajustado
+            vUnit: 420, // Ajustado
+            subtotal: 490 // Ajustado
         };
 
+        // Larguras
+        const colW = {
+            tipo: 50,
+            descricao: 160,
+            link: 100,
+            qtd: 40,
+            vUnit: 70,
+            subtotal: 60
+        };
+
+
         // Cabeçalhos da Tabela
-        doc.font('Helvetica-Bold').text('TIPO', colX.tipo, tableTop, { width: 50 });
-        doc.text('DESCRIÇÃO', colX.descricao, tableTop, { width: 250 });
-        doc.text('QTD', colX.qtd, tableTop, { width: 40, align: 'right' });
-        doc.text('V. UNIT.', colX.vUnit, tableTop, { width: 70, align: 'right' });
-        doc.text('SUBTOTAL', colX.subtotal, tableTop, { width: 70, align: 'right' });
+        doc.font('Helvetica-Bold').text('TIPO', colX.tipo, tableTop, { width: colW.tipo });
+        doc.text('DESCRIÇÃO', colX.descricao, tableTop, { width: colW.descricao });
+        doc.text('LINK COMPRA', colX.link, tableTop, { width: colW.link }); // 🚨 NOVO CABEÇALHO
+        doc.text('QTD', colX.qtd, tableTop, { width: colW.qtd, align: 'right' });
+        doc.text('V. UNIT.', colX.vUnit, tableTop, { width: colW.vUnit, align: 'right' });
+        doc.text('SUBTOTAL', colX.subtotal, tableTop, { width: colW.subtotal, align: 'right' });
 
         doc.font('Helvetica'); // Volta à fonte normal
         doc.moveDown(0.2);
@@ -247,19 +261,23 @@ const gerarPDFOrcamento = async (req, res) => {
             }
 
             // Exibição dos dados principais do item
-            doc.text(item.tipoItem, colX.tipo, currentY, { width: 50 });
-            doc.text(item.descricao, colX.descricao, currentY, { width: 250 });
-            doc.text(item.quantidade.toString(), colX.qtd, currentY, { width: 40, align: 'right' });
-            doc.text(formatCurrency(item.valorUnitario), colX.vUnit, currentY, { width: 70, align: 'right' });
-            doc.text(formatCurrency(item.subtotal), colX.subtotal, currentY, { width: 70, align: 'right' });
+            doc.text(item.tipoItem, colX.tipo, currentY, { width: colW.tipo });
+            doc.text(item.descricao, colX.descricao, currentY, { width: colW.descricao });
+
+            // 🚨 EXIBIÇÃO DO LINK
+            doc.text(item.linkCompra ? 'Ver Link' : 'N/A', colX.link, currentY, {
+                width: colW.link,
+                link: item.linkCompra, // Adiciona o link real ao texto 'Ver Link'
+                underline: true,
+                fillColor: item.linkCompra ? '#007bff' : '#444'
+            });
+
+            doc.text(item.quantidade.toString(), colX.qtd, currentY, { width: colW.qtd, align: 'right' });
+            doc.text(formatCurrency(item.valorUnitario), colX.vUnit, currentY, { width: colW.vUnit, align: 'right' });
+            doc.text(formatCurrency(item.subtotal), colX.subtotal, currentY, { width: colW.subtotal, align: 'right' });
 
             currentY += 15;
-
-            // Adiciona o link da peça (em fonte menor e azul, como você solicitou)
-            if (item.linkCompra) {
-                doc.fontSize(7).fillColor('#007bff').text(`Link Compra: ${item.linkCompra}`, colX.descricao, currentY, { width: 450 });
-                currentY += 10;
-            }
+            doc.y = currentY; // Força o cursor Y para a próxima linha
 
             doc.moveDown(0.1); // Espaçamento extra entre itens
             currentY = doc.y;
@@ -271,6 +289,8 @@ const gerarPDFOrcamento = async (req, res) => {
         // ----------------------------------------------------
         // --- RESUMO FINANCEIRO (Totais) ---
         // ----------------------------------------------------
+
+        // ... (Bloco de Totais mantido, ele está correto)
 
         // TAXA DE SERVIÇO
         doc.fontSize(10).fillColor('#333').text('Taxa de Serviço (Mão de Obra):', 350, doc.y, { width: 130, align: 'right' });

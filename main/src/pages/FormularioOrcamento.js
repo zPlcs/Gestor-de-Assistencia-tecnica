@@ -2,10 +2,14 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Container, Form, Button, Card, Row, Col, Alert, Spinner, Badge, InputGroup, Table } from 'react-bootstrap';
 import api from '../services/api';
+import { useAuth } from '../context/AuthContext';
 
 // Status e Tipos (devem bater com os Models do Backend)
 const TIPO_ORCAMENTO_OPTIONS = ['Reparo', 'Montagem', 'Revisão/Manutenção'];
 const STATUS_APROVACAO_OPTIONS = ['Pendente', 'Aprovado', 'Rejeitado'];
+
+const { token } = useAuth(); 
+const [isDownloading, setIsDownloading] = useState(false);
 
 // Função auxiliar para formatar a moeda
 const formatCurrency = (value) => {
@@ -202,14 +206,55 @@ const FormularioOrcamento = ({ isReadOnly = false }) => {
     };
 
     // FUNÇÃO DE DOWNLOAD DE PDF
-    const handleGeneratePDF = () => {
-        if (!orcamento._id) {
-            alert('O orçamento precisa ser salvo antes de gerar o PDF.');
-            return;
+    const handleGeneratePDF = async () => {
+    if (!orcamento._id) {
+        alert('O orçamento precisa ser salvo antes de gerar o PDF.');
+        return;
+    }
+
+    setIsDownloading(true);
+    setError(null);
+    
+    try {
+        // 1. REQUISIÇÃO COM AXIOS (ENVIA O TOKEN AUTOMATICAMENTE)
+        const response = await api.get(`/orcamentos/${orcamento._id}/pdf`, {
+            // Opcional: Se o Interceptor estiver falhando, você pode forçar o header aqui:
+            // headers: { 'Authorization': `Bearer ${token}` },
+            
+            // ESSENCIAL: Diz ao Axios para tratar a resposta como um arquivo binário
+            responseType: 'blob', 
+        });
+
+        // 2. Criação da URL de Download no navegador
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        
+        // 3. Cria o link temporário e simula o clique
+        const link = document.createElement('a');
+        link.href = url;
+        // O Express no Backend define o filename, mas podemos dar um padrão aqui:
+        link.setAttribute('download', `orcamento_${orcamento._id}.pdf`); 
+        
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        
+        // Limpa o objeto URL
+        window.URL.revokeObjectURL(url);
+
+
+    } catch (error) {
+        console.error('Erro ao gerar PDF:', error.response?.data || error.message);
+        
+        // Se for um 403 Forbidden, informa sobre permissão
+        if (error.response && error.response.status === 403) {
+            setError('Acesso negado. Você não possui permissão para gerar este PDF (403 Forbidden).');
+        } else {
+            setError('Falha ao gerar o documento. Verifique se o Backend está ativo.');
         }
-        const pdfUrl = `${api.defaults.baseURL}/orcamentos/${orcamento._id}/pdf`;
-        window.open(pdfUrl, '_blank');
-    };
+    } finally {
+        setIsDownloading(false);
+    }
+};
 
     const clienteNome = osData.cliente?.nome || 'N/A';
     const equipamentoInfo = osData.equipamento

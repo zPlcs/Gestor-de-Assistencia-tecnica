@@ -167,156 +167,157 @@ const gerarPDFOrcamento = async (req, res) => {
 
         const doc = new PDFDocument({ size: 'A4', margin: 50 });
 
-        res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', `attachment; filename=orcamento_${orcamentoId}.pdf`);
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename=orcamento_${orcamentoId}.pdf`);
 
-        doc.pipe(res);
+        doc.pipe(res);
 
-        // Funções auxiliares (Definidas internamente)
-        const formatCurrency = (value) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value || 0);
-        const formatId = (id) => id ? id.toString().substring(0, 6).toUpperCase() : 'N/A';
-        const docWidth = 550; // Largura útil do documento
+        // Funções auxiliares (Definidas internamente)
+        const formatCurrency = (value) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value || 0);
+        const formatId = (id) => id ? id.toString().substring(0, 6).toUpperCase() : 'N/A';
+        const docWidth = 550; // Largura útil do documento
 
-        // --- TÍTULO E DETALHES GERAIS ---
-        doc.fontSize(18).fillColor('#333').text('ORÇAMENTO DE SERVIÇO', { align: 'center' });
-        doc.fontSize(10).fillColor('#666').text(`Status: ${orcamento.statusAprovacao}`, { align: 'center' });
-        doc.moveDown(1);
+        // --- TÍTULO E DETALHES GERAIS ---
+        doc.fontSize(18).fillColor('#333').text('ORÇAMENTO DE SERVIÇO', { align: 'center' });
+        doc.fontSize(10).fillColor('#666').text(`Status: ${orcamento.statusAprovacao}`, { align: 'center' });
+        doc.moveDown(1);
 
-        // Dados da Empresa/Data
-        doc.fontSize(8).fillColor('#666');
-        doc.text(`Data de Emissão: ${new Date().toLocaleDateString()}`, { align: 'right' });
-        doc.text(`Orçamento ID: ${formatId(orcamento._id)}`, { align: 'right' });
-        doc.moveDown(1);
-        doc.strokeColor('#ccc').lineWidth(1).moveTo(50, doc.y).lineTo(docWidth, doc.y).stroke();
-        doc.moveDown(0.5);
+        // Dados da Empresa/Data
+        doc.fontSize(8).fillColor('#666');
+        doc.text(`Data de Emissão: ${new Date().toLocaleDateString()}`, { align: 'right' });
+        doc.text(`Orçamento ID: ${formatId(orcamento._id)}`, { align: 'right' });
+        doc.moveDown(1);
+        doc.strokeColor('#ccc').lineWidth(1).moveTo(50, doc.y).lineTo(docWidth, doc.y).stroke();
+        doc.moveDown(0.5);
 
-        // --- DADOS DO CLIENTE E OS ---
-        doc.fontSize(12).fillColor('#000').text('DADOS DA ORDEM DE SERVIÇO', { underline: true });
-        doc.fontSize(10).fillColor('#333');
+        // --- DADOS DO CLIENTE E OS ---
+        doc.fontSize(12).fillColor('#000').text('DADOS DA ORDEM DE SERVIÇO', { underline: true });
+        doc.fontSize(10).fillColor('#333');
 
-        // Informações em 2 colunas
-        doc.text(`Cliente: ${orcamento.ordemServico.cliente.nome}`, 50, doc.y + 5);
-        doc.text(`OS Principal: ${formatId(orcamento.ordemServico._id)}`, 350, doc.y - 12);
+        // Informações em 2 colunas
+        doc.text(`Cliente: ${orcamento.ordemServico.cliente.nome}`, 50, doc.y + 5);
+        doc.text(`OS Principal: ${formatId(orcamento.ordemServico._id)}`, 350, doc.y - 12);
 
-        doc.text(`E-mail: ${orcamento.ordemServico.cliente.email || 'N/A'}`, 50, doc.y + 2);
-        doc.text(`Telefone: ${orcamento.ordemServico.cliente.telefone || 'N/A'}`, 350, doc.y - 12);
+        doc.text(`E-mail: ${orcamento.ordemServico.cliente.email || 'N/A'}`, 50, doc.y + 2);
+        doc.text(`Telefone: ${orcamento.ordemServico.cliente.telefone || 'N/A'}`, 350, doc.y - 12);
 
-        doc.text(`Equipamento: ${orcamento.ordemServico.equipamento.marca} ${orcamento.ordemServico.equipamento.modelo} (SN: ${orcamento.ordemServico.equipamento.numSerie})`);
-        doc.text(`Problema Reportado: ${orcamento.ordemServico.tituloProblema}`);
-        doc.moveDown(2);
+        doc.text(`Equipamento: ${orcamento.ordemServico.equipamento.marca} ${orcamento.ordemServico.equipamento.modelo} (SN: ${orcamento.ordemServico.equipamento.numSerie})`);
+        doc.text(`Problema Reportado: ${orcamento.ordemServico.tituloProblema}`);
+        doc.moveDown(2);
 
-        // ----------------------------------------------------
-        // --- TABELA DE ITENS (Lógica de Loop) ---
-        // ----------------------------------------------------
+        // ----------------------------------------------------
+        // --- TABELA DE ITENS (Lógica de Loop) ---
+        // ----------------------------------------------------
 
-        // 🚨 CORREÇÃO: CENTRALIZAR O TÍTULO
-        doc.fontSize(12).fillColor('#000').text('ITENS E SERVIÇOS', { align: 'center', underline: true });
-        doc.moveDown(0.5);
+        // 🚨 CENTRALIZAR O TÍTULO
+        doc.fontSize(12).fillColor('#000').text('ITENS E SERVIÇOS', { align: 'center', underline: true });
+        doc.moveDown(0.5);
 
-        const tableTop = doc.y;
-        doc.fontSize(9).fillColor('#333');
+        const tableTop = doc.y;
+        doc.fontSize(9).fillColor('#333');
 
-        // Posições X para as colunas (Ajuste para Link)
-        const colX = {
-            tipo: 50,
-            descricao: 100,
-            link: 270, // 🚨 NOVO: Posição do Link
-            qtd: 380, // Ajustado
-            vUnit: 420, // Ajustado
-            subtotal: 490 // Ajustado
-        };
+        // Posições X para as colunas (Ajuste para Link)
+        const colX = {
+            tipo: 50,
+            descricao: 100,
+            link: 300,
+            qtd: 400,
+            vUnit: 440,
+            subtotal: 500
+        };
 
-        // Larguras
-        const colW = {
-            tipo: 50,
-            descricao: 160,
-            link: 100,
-            qtd: 40,
-            vUnit: 70,
-            subtotal: 60
-        };
-
-
-        // Cabeçalhos da Tabela
-        doc.font('Helvetica-Bold').text('TIPO', colX.tipo, tableTop, { width: colW.tipo });
-        doc.text('DESCRIÇÃO', colX.descricao, tableTop, { width: colW.descricao });
-        doc.text('LINK COMPRA', colX.link, tableTop, { width: colW.link }); // 🚨 NOVO CABEÇALHO
-        doc.text('QTD', colX.qtd, tableTop, { width: colW.qtd, align: 'right' });
-        doc.text('V. UNIT.', colX.vUnit, tableTop, { width: colW.vUnit, align: 'right' });
-        doc.text('SUBTOTAL', colX.subtotal, tableTop, { width: colW.subtotal, align: 'right' });
-
-        doc.font('Helvetica'); // Volta à fonte normal
-        doc.moveDown(0.2);
-        doc.strokeColor('#ccc').lineWidth(0.5).moveTo(50, doc.y).lineTo(docWidth, doc.y).stroke();
-        doc.moveDown(0.2);
-
-        let currentY = doc.y;
-        doc.fontSize(9).fillColor('#444');
-
-        itens.forEach(item => {
-            // Se a linha for passar da página, adiciona uma nova página
-            if (currentY > 750) {
-                doc.addPage();
-                currentY = 50; // Reinicia Y na nova página
-            }
-
-            // Exibição dos dados principais do item
-            doc.text(item.tipoItem, colX.tipo, currentY, { width: colW.tipo });
-            doc.text(item.descricao, colX.descricao, currentY, { width: colW.descricao });
-
-            // 🚨 EXIBIÇÃO DO LINK
-            doc.text(item.linkCompra ? 'Ver Link' : 'N/A', colX.link, currentY, {
-                width: colW.link,
-                link: item.linkCompra, // Adiciona o link real ao texto 'Ver Link'
-                underline: true,
-                fillColor: item.linkCompra ? '#007bff' : '#444'
-            });
-
-            doc.text(item.quantidade.toString(), colX.qtd, currentY, { width: colW.qtd, align: 'right' });
-            doc.text(formatCurrency(item.valorUnitario), colX.vUnit, currentY, { width: colW.vUnit, align: 'right' });
-            doc.text(formatCurrency(item.subtotal), colX.subtotal, currentY, { width: colW.subtotal, align: 'right' });
-
-            currentY += 15;
-            doc.y = currentY; // Força o cursor Y para a próxima linha
-
-            doc.moveDown(0.1); // Espaçamento extra entre itens
-            currentY = doc.y;
-        });
-
-        doc.strokeColor('#ccc').lineWidth(0.5).moveTo(50, doc.y).lineTo(docWidth, doc.y).stroke(); // Linha final da tabela
-        doc.moveDown(1);
-
-        // ----------------------------------------------------
-        // --- RESUMO FINANCEIRO (Totais) ---
-        // ----------------------------------------------------
-
-        // ... (Bloco de Totais mantido, ele está correto)
-
-        // TAXA DE SERVIÇO
-        doc.fontSize(10).fillColor('#333').text('Taxa de Serviço (Mão de Obra):', 350, doc.y, { width: 130, align: 'right' });
-        doc.text(formatCurrency(orcamento.taxaServico), 480, doc.y, { width: 70, align: 'right' });
-        doc.moveDown(0.5);
-
-        // VALOR TOTAL FINAL
-        doc.font('Helvetica-Bold').fontSize(12).fillColor('#000').text('VALOR TOTAL FINAL:', 350, doc.y, { width: 130, align: 'right' });
-        doc.text(formatCurrency(orcamento.valorTotal), 480, doc.y, { width: 70, align: 'right' });
-        doc.moveDown(2);
-
-        doc.font('Helvetica'); // Volta à fonte normal
-
-        // --- OBSERVAÇÕES ---
-        doc.fontSize(10).fillColor('#333').text('Observações e Termos:', 50, doc.y);
-        doc.fontSize(9).fillColor('#666').text(orcamento.observacoes || 'Nenhuma observação registrada.', 50, doc.y + 5, { width: 500 });
-        doc.moveDown(2);
+        // Larguras (W) das colunas (Ajustadas para 550 total)
+        const colW = {
+            tipo: 40,
+            descripcion: 200, 
+            link: 90,
+            qtd: 40,
+            vUnit: 50,
+            subtotal: 50
+        };
 
 
-        // Finaliza o documento
-        doc.end();
+        // Cabeçalhos da Tabela
+        doc.font('Helvetica-Bold').text('TIPO', colX.tipo, tableTop, { width: colW.tipo });
+        doc.text('DESCRIÇÃO', colX.descripcion, tableTop, { width: colW.descripcion });
+        doc.text('LINK COMPRA', colX.link, tableTop, { width: colW.link }); // CABEÇALHO LINK
+        doc.text('QTD', colX.qtd, tableTop, { width: colW.qtd, align: 'right' });
+        doc.text('V. UNIT.', colX.vUnit, tableTop, { width: colW.vUnit, align: 'right' });
+        doc.text('SUBTOTAL', colX.subtotal, tableTop, { width: colW.subtotal, align: 'right' });
 
-    } catch (error) {
-        console.error('Erro na geração do PDF:', error);
-        res.status(500).json({ message: 'Falha na geração do documento PDF.', error: error.message });
-    }
+        doc.font('Helvetica'); // Volta à fonte normal
+        doc.moveDown(0.2);
+        doc.strokeColor('#ccc').lineWidth(0.5).moveTo(50, doc.y).lineTo(docWidth, doc.y).stroke();
+        doc.moveDown(0.2);
+
+        let currentY = doc.y;
+        doc.fontSize(9).fillColor('#444');
+
+        itens.forEach(item => {
+            // 1. Calcula a altura necessária
+            const descriptionHeight = doc.heightOfString(item.descricao, { width: colW.descripcion });
+            const lineHeight = Math.max(descriptionHeight, 15);
+            
+            // Checagem de quebra de página
+            if (currentY + lineHeight > 750) {
+                doc.addPage();
+                currentY = 50; // Reinicia Y
+            }
+
+            // Desenha o conteúdo principal do item
+            doc.text(item.tipoItem, colX.tipo, currentY, { width: colW.tipo });
+            doc.text(item.descricao, colX.descripcion, currentY, { width: colW.descripcion });
+
+            // EXIBIÇÃO DO LINK (Com hiperlink)
+            doc.fillColor(item.linkCompra ? '#007bff' : '#444').text(
+                item.linkCompra ? 'Ver Link' : 'N/A', 
+                colX.link, 
+                currentY, 
+                { 
+                    width: colW.link,
+                    link: item.linkCompra, // Adiciona o hiperlink real
+                    underline: !!item.linkCompra
+                }
+            );
+            doc.fillColor('#444'); // Volta a cor padrão
+
+            // Valores numéricos (no mesmo Y)
+            doc.text(item.quantidade.toString(), colX.qtd, currentY, { width: colW.qtd, align: 'right' });
+            doc.text(formatCurrency(item.valorUnitario), colX.vUnit, currentY, { width: colW.vUnit, align: 'right' });
+            doc.text(formatCurrency(item.subtotal), colX.subtotal, currentY, { width: colW.subtotal, align: 'right' });
+
+            currentY += lineHeight + 5; // Avança o cursor pela altura calculada + espaçamento
+            doc.y = currentY; 
+        });
+
+        doc.strokeColor('#ccc').lineWidth(0.5).moveTo(50, doc.y).lineTo(docWidth, doc.y).stroke(); // Linha final da tabela
+        doc.moveDown(1);
+
+        // --- RESUMO FINANCEIRO (Totais) ---
+        // ... (Restante do Resumo Financeiro)
+        doc.fontSize(10).fillColor('#333').text('Taxa de Serviço (Mão de Obra):', 350, doc.y, { width: 130, align: 'right' });
+        doc.text(formatCurrency(orcamento.taxaServico), 480, doc.y, { width: 70, align: 'right' });
+        doc.moveDown(0.5);
+
+        doc.font('Helvetica-Bold').fontSize(12).fillColor('#000').text('VALOR TOTAL FINAL:', 350, doc.y, { width: 130, align: 'right' });
+        doc.text(formatCurrency(orcamento.valorTotal), 480, doc.y, { width: 70, align: 'right' });
+        doc.moveDown(2);
+
+        doc.font('Helvetica'); // Volta à fonte normal
+
+        // --- OBSERVAÇÕES ---
+        doc.fontSize(10).fillColor('#333').text('Observações e Termos:', 50, doc.y);
+        doc.fontSize(9).fillColor('#666').text(orcamento.observacoes || 'Nenhuma observação registrada.', 50, doc.y + 5, { width: 500 });
+        doc.moveDown(2);
+
+
+        // Finaliza o documento
+        doc.end();
+
+    } catch (error) {
+        console.error('Erro na geração do PDF:', error);
+        res.status(500).json({ message: 'Falha na geração do documento PDF.', error: error.message });
+    }
 };
 // ... (Restante das funções: deletarOrcamento, etc.)
 

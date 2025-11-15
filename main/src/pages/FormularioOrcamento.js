@@ -331,7 +331,7 @@ const FormularioOrcamento = ({ isReadOnly = false }) => {
                             </Form>
 
                             {/* BOTÃO PDF - Visível sempre que o orçamento existir */}
-                            <Button variant="outline-secondary" onClick={handleGeneratePDF} className="w-100" disabled={!orcamento._id || isSavingDetails}>
+                            <Button variant="outline-secondary" onClick={handleGeneratePDF} className="w-100" disabled={!orcamento._id || isSavingDetails || isDownloading}>
                                 <i className="bi bi-file-earmark-pdf me-2"></i> Gerar e Baixar PDF
                             </Button>
                         </Card.Body>

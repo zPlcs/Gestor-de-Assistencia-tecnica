@@ -175,143 +175,117 @@ const gerarPDFOrcamento = async (req, res) => {
         // Funções auxiliares (Definidas internamente)
         const formatCurrency = (value) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value || 0);
         const formatId = (id) => id ? id.toString().substring(0, 6).toUpperCase() : 'N/A';
-        const docWidth = 550; // Largura útil do documento
 
         // --- Posições X e Larguras ---
-        const colX = { tipo: 50, descricao: 100, link: 300, qtd: 390, vUnit: 430, subtotal: 500 };
-        const colW = { tipo: 40, descripcion: 190, link: 90, qtd: 40, vUnit: 50, subtotal: 50 };
         const cliente = orcamento.ordemServico.cliente;
         const equipamento = orcamento.ordemServico.equipamento;
 
 
         // --- BLOCO DE TÍTULO ---
-        doc.fontSize(25).fillColor('#333').text('ORÇAMENTO DE SERVIÇO', { align: 'center' });
+        doc
+            .fontSize(25)
+            .text('ORÇAMENTO DE SERVIÇO', {
+                align: 'center'
+            });
         doc.moveDown(1);
 
         // --- INFORMAÇÕES DE EMISSÃO ---
         let currentY = doc.y;
 
         // Coluna Esquerda: Data
-        doc.fontSize(10).fillColor('#333').text(`Data de Emissão: ${new Date().toLocaleDateString()}`, 50, currentY, { align: 'left' });
-        doc.moveDown(0.2);
+        doc.fontSize(10).text(`Data de Emissão: ${new Date().toLocaleDateString()}`, {
+            align: 'left'
+        })
+
 
         // Coluna Esquerda: ID
-        doc.text(`Orçamento ID: ${formatId(orcamento._id)}`, 50, doc.y, { align: 'left' });
-        doc.moveDown(1.5);
+        doc.fontSize(10).text(`Orçamento ID: ${formatId(orcamento._id)}`, {
+            align: 'left'
+        })
+        doc.moveDown(1);
 
         // --- DADOS DO CLIENTE E OS ---
 
         // Cliente
-        doc.text(`Cliente: ${cliente?.nome || 'N/A'}`, 50, doc.y, { align: 'left' });
-        doc.moveDown(0.2);
+        doc.fontSize(10).text(`Cliente: ${cliente?.nome || 'N/A'}`, {
+            align: 'left'
+        })
+
 
         // Telefone
-        doc.text(`Telefone: ${cliente?.telefone || 'N/A'}`, 50, doc.y, { align: 'left' });
-        doc.moveDown(1.5);
+        doc.fontSize(10).text(`Telefone: ${cliente?.telefone || 'N/A'}`, {
+            align: 'left'
+        })
+        doc.moveDown(1);
 
         // OS
-        doc.text(`OS: ${formatId(orcamento.ordemServico._id)}`, 50, doc.y, { align: 'left' });
-        doc.moveDown(0.2);
+        doc.fontSize(10).text(`OS: ${formatId(orcamento.ordemServico._id)}`, {
+            align: 'left'
+        })
 
         // Equipamento
-        doc.text(`Equipamento: ${equipamento?.marca || 'N/A Marca'} ${equipamento?.modelo || 'N/A Modelo'}`, 50, doc.y, { align: 'left' });
-        doc.moveDown(0.2);
+        doc.fontSize(10).text(`Equipamento: ${equipamento?.marca || 'N/A Marca'} ${equipamento?.modelo || 'N/A Modelo'}`, {
+            align: 'left'
+        })
 
         // Problema
-        doc.text(`Problema Reportado: ${orcamento.ordemServico.tituloProblema}`, 50, doc.y, { align: 'left' });
+        doc.fontSize(10).text(`Problema Reportado: ${orcamento.ordemServico.tituloProblema}`, {
+            align: 'left'
+        })
         doc.moveDown(1);
 
         // --- LINHA DIVISÓRIA ---
-        doc.fontSize(10).text('----------------------------------------------------------------------------------------------------------------------------------', { align: 'center', width: docWidth });
-        doc.moveDown(1.5);
+        doc.fontSize(10).text('------------------------------', {
+            align: 'center'
+        })
+        doc.moveDown(1);
 
         // --- TÍTULO ITENS E SERVIÇOS ---
-        doc.fontSize(25).fillColor('#333').text('ITENS E SERVIÇOS', { align: 'center' });
+        doc.fontSize(25) // Define o tamanho da fonte para o título
+            .text('ITENS E SERVIÇOS', {
+                align: 'center' // Alinha o texto ao centro
+            });
         doc.moveDown(1);
 
 
         // --- TABELA DE ITENS (Lógica de Loop) ---
 
-        doc.fontSize(9).fillColor('#333');
-        const tableTop = doc.y;
+
+
 
         // 🚨 CABEÇALHOS DA TABELA
-        doc.font('Helvetica-Bold').text('Tipo', colX.tipo, tableTop, { width: colW.tipo });
-        doc.text('Descrição', colX.descricao, tableTop, { width: colW.descripcion });
-        doc.text('Link de Compra', colX.link, tableTop, { width: colW.link });
-        doc.text('Qtd', colX.qtd, tableTop, { width: colW.qtd, align: 'right' });
-        doc.text('V. Unit.', colX.vUnit, tableTop, { width: colW.vUnit, align: 'right' });
-        doc.text('Subtotal', colX.subtotal, tableTop, { width: colW.subtotal, align: 'right' });
-
-        doc.font('Helvetica'); // Volta à fonte normal
-        doc.moveDown(0.5);
-        doc.strokeColor('#000').lineWidth(1).moveTo(50, doc.y).lineTo(docWidth, doc.y).stroke(); // Linha de separação
-        doc.moveDown(0.2);
-
-        currentY = doc.y;
-        doc.fontSize(10).fillColor('#444');
-
-        itens.forEach(item => {
-            const descriptionHeight = doc.heightOfString(item.descricao, { width: colW.descripcion });
-            const lineHeight = Math.max(descriptionHeight, 18); // Aumentei o mínimo para 18 para visualização
-
-            // Checagem de quebra de página
-            if (currentY + lineHeight > 750) {
-                doc.addPage();
-                currentY = 50;
-            }
-
-            // Desenha o conteúdo principal do item
-            doc.text(item.tipoItem, colX.tipo, currentY, { width: colW.tipo });
-            doc.text(item.descricao, colX.descripcion, currentY, { width: colW.descripcion });
-
-            // EXIBIÇÃO DO LINK (Com hiperlink)
-            doc.fillColor(item.linkCompra ? '#007bff' : '#444').text(
-                item.linkCompra ? 'Ver Link' : 'N/A',
-                colX.link,
-                currentY,
-                {
-                    width: colW.link,
-                    link: item.linkCompra,
-                    underline: !!item.linkCompra
-                }
-            );
-            doc.fillColor('#444'); // Volta a cor padrão
-
-            // Valores numéricos
-            doc.text(item.quantidade.toString(), colX.qtd, currentY, { width: colW.qtd, align: 'right' });
-            doc.text(formatCurrency(item.valorUnitario), colX.vUnit, currentY, { width: colW.vUnit, align: 'right' });
-            doc.text(formatCurrency(item.subtotal), colX.subtotal, currentY, { width: colW.subtotal, align: 'right' });
-
-            currentY += lineHeight + 5; // Avança o cursor pela altura calculada + espaçamento
-            doc.y = currentY;
-        });
-
-        doc.strokeColor('#000').lineWidth(1).moveTo(50, doc.y).lineTo(docWidth, doc.y).stroke(); // Linha final
+        doc.fontSize(10).table({
+            data: [
+                ['Tipo', 'Descrição', 'Link de Compra', 'Quantidade', 'Valor Unitário', 'Subtotal'],
+                ...itens.map(item => [
+                    `${item.tipoItem}`,
+                    `${item.descricao}`,
+                    `${item.linkCompra ? 'Ver Link' : 'N/A'}`,
+                    `${item.quantidade.toString()}`,
+                    `${formatCurrency(item.valorUnitario)}`,
+                    `${formatCurrency(item.subtotal)}`
+                ]),
+            ],
+        })
         doc.moveDown(1);
 
         // --- LINHA DIVISÓRIA ---
-        doc.fontSize(10).text('----------------------------------------------------------------------------------------------------------------------------------', { align: 'center', width: docWidth });
-        doc.moveDown(1.5);
+        doc.fontSize(10).text('------------------------------', {
+            align: 'center'
+        })
+        doc.moveDown(1);
 
         // --- RESUMO FINANCEIRO (Totais) ---
 
         // TAXA DE SERVIÇO
-        doc.fontSize(10).fillColor('#333').text('Taxa de Serviço (Mão de obra):', 350, doc.y, { width: 130, align: 'right' });
-        doc.text(formatCurrency(orcamento.taxaServico), 480, doc.y, { width: 70, align: 'right' });
-        doc.moveDown(0.5);
+        doc.fontSize(10).text(`Taxa de Serviço (Mão de obra): ${formatCurrency(orcamento.taxaServico)}`, {
+            align: 'right'
+        })
 
         // VALOR TOTAL FINAL
-        doc.font('Helvetica-Bold').fontSize(16).fillColor('#000').text('VALOR TOTAL FINAL:', 350, doc.y, { width: 130, align: 'right' });
-        doc.text(formatCurrency(orcamento.valorTotal), 480, doc.y, { width: 70, align: 'right' });
-        doc.moveDown(2);
-
-        doc.font('Helvetica'); // Volta à fonte normal
-
-        // --- OBSERVAÇÕES ---
-        doc.fontSize(10).fillColor('#333').text('Observações e Termos:', 50, doc.y);
-        doc.fontSize(9).fillColor('#666').text(orcamento.observacoes || 'Nenhuma observação registrada.', 50, doc.y + 5, { width: 500 });
-        doc.moveDown(2);
+        doc.font('Helvetica-Bold').fontSize(16).text(`VALOR TOTAL FINAL: ${formatCurrency(orcamento.valorTotal)}`, {
+            align: 'right'
+        })
 
 
         // Finaliza o documento

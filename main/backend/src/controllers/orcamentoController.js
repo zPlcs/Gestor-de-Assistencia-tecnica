@@ -182,14 +182,14 @@ const gerarPDFOrcamento = async (req, res) => {
         let detailsY = 150;
 
         doc.fontSize(24).fillColor('#333').text('PatLab', 50, 80); // [cite, 2]
-        doc.fontSize(10).fillColor('#555').text('Assistência Técnica de Computação', 50, 105);[cite, 2]
+        doc.fontSize(10).fillColor('#555').text('Assistência Técnica de Computação', 50, 105);
 
-        doc.fontSize(18).fillColor('#333').text('ORÇAMENTO DE SERVIÇO', 50, detailsY - 30, { align: 'center', width: 500 });[cite, 3]
+        doc.fontSize(18).fillColor('#333').text('ORÇAMENTO DE SERVIÇO', 50, detailsY - 30, { align: 'center', width: 500 });
 
         // --- DETALHES DE EMISSÃO (Lado Direito) ---
         doc.fontSize(8).fillColor('#666');
-        doc.text(`Data de Emissão: ${new Date().toLocaleDateString()}`, 350, 60, { align: 'right', width: 200 });[cite, 4]
-        doc.text(`Orçamento ID: ${formatId(orcamento._id)}`, 350, 75, { align: 'right', width: 200 });[cite, 5]
+        doc.text(`Data de Emissão: ${new Date().toLocaleDateString()}`, 350, 60, { align: 'right', width: 200 });
+        doc.text(`Orçamento ID: ${formatId(orcamento._id)}`, 350, 75, { align: 'right', width: 200 });
         doc.moveDown(2);
 
 
@@ -202,22 +202,21 @@ const gerarPDFOrcamento = async (req, res) => {
         const equipamento = orcamento.ordemServico.equipamento;
 
         // Informações em 2 colunas (Labels exatas do PDF)
-        doc.text(`Cliente: ${cliente?.nome || 'N/A'}`, 50, doc.y + 5);[cite, 6]
-        doc.text(`Telefone: ${cliente?.telefone || 'N/A'}`, 350, doc.y - 12);[cite, 7]
+        doc.text(`Cliente: ${cliente?.nome || 'N/A'}`, 50, doc.y + 5);
+        doc.text(`Telefone: ${cliente?.telefone || 'N/A'}`, 350, doc.y - 12);
 
-        doc.text(`OS: ${formatId(orcamento.ordemServico._id)}`, 350, doc.y + 2);[cite, 8]
+        doc.text(`OS: ${formatId(orcamento.ordemServico._id)}`, 350, doc.y + 2);
 
         // Linha do Equipamento e Problema
-        doc.text(`Equipamento: ${equipamento?.marca || 'N/A'} ${equipamento?.modelo || 'N/A'}`, 50, doc.y + 5);[cite, 9]
-        doc.text(`Problema Reportado: ${orcamento.ordemServico.tituloProblema}`, 50, doc.y + 15);[cite, 10]
+        doc.text(`Equipamento: ${equipamento?.marca || 'N/A'} ${equipamento?.modelo || 'N/A'}`, 50, doc.y + 5);
+        doc.text(`Problema Reportado: ${orcamento.ordemServico.tituloProblema}`, 50, doc.y + 15);
         doc.moveDown(2);
 
         // ----------------------------------------------------
         // --- TABELA DE ITENS (Lógica de Loop) ---
         // ----------------------------------------------------
 
-        doc.fontSize(12).fillColor('#000').text('ITENS E SERVIÇOS', { align: 'left', underline: true });[cite, 12]
-        doc.moveDown(0.5);
+        doc.fontSize(12).fillColor('#000').text('ITENS E SERVIÇOS', { align: 'left', underline: true });
 
         const tableTop = doc.y;
         doc.fontSize(9).fillColor('#333');
@@ -292,7 +291,7 @@ const gerarPDFOrcamento = async (req, res) => {
         doc.moveDown(0.5);
 
         // VALOR TOTAL FINAL
-        doc.font('Helvetica-Bold').fontSize(12).fillColor('#000').text('VALOR TOTAL FINAL:', 350, doc.y, { width: 130, align: 'right' });[cite, 13]
+        doc.font('Helvetica-Bold').fontSize(12).fillColor('#000').text('VALOR TOTAL FINAL:', 350, doc.y, { width: 130, align: 'right' }); 
         doc.text(formatCurrency(orcamento.valorTotal), 480, doc.y, { width: 70, align: 'right' });
         doc.moveDown(2);
 

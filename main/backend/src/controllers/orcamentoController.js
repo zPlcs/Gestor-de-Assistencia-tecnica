@@ -234,21 +234,13 @@ const gerarPDFOrcamento = async (req, res) => {
         })
         doc.moveDown(1);
 
-        // --- LINHA DIVISÓRIA ---
-        doc.fontSize(10).text('------------------------------', {
-            align: 'center'
-        })
-        doc.moveDown(1);
-
+  
         // --- TÍTULO ITENS E SERVIÇOS ---
         doc.fontSize(25) // Define o tamanho da fonte para o título
             .text('ITENS E SERVIÇOS', {
                 align: 'center' // Alinha o texto ao centro
             });
         doc.moveDown(1);
-
-
-        // --- TABELA DE ITENS (Lógica de Loop) ---
 
 
 
@@ -260,7 +252,7 @@ const gerarPDFOrcamento = async (req, res) => {
                 ...itens.map(item => [
                     `${item.tipoItem}`,
                     `${item.descricao}`,
-                    `${item.linkCompra ? 'Ver Link' : 'N/A'}`,
+                    `${item.linkCompra}`,
                     `${item.quantidade.toString()}`,
                     `${formatCurrency(item.valorUnitario)}`,
                     `${formatCurrency(item.subtotal)}`
@@ -270,10 +262,6 @@ const gerarPDFOrcamento = async (req, res) => {
         doc.moveDown(1);
 
         // --- LINHA DIVISÓRIA ---
-        doc.fontSize(10).text('------------------------------', {
-            align: 'center'
-        })
-        doc.moveDown(1);
 
         // --- RESUMO FINANCEIRO (Totais) ---
 
